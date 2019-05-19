@@ -53,23 +53,17 @@
         android:layout_height="match_parent"
         android:layout_weight="1">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
-            <!-- TabWidget의 id값이 반드시 "tabs"로 지정되어야 함. -->
-            <TabWidget
-                android:id="@android:id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true" />
 
             <!-- FrameLayout의 id값이 반드시 "tabcontent"로 지정되어야 함. -->
             <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
                 <!-- 첫 번째 페이지. content1 -->
                 <LinearLayout
@@ -124,7 +118,7 @@
                 </LinearLayout>
 
                 <!-- 세 번째 페이지. content3 -->
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/content3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -133,9 +127,56 @@
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/chart"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="match_parent"
+                        android:layout_above="@+id/seekBar1"/>
+                    <SeekBar
+                        android:id="@+id/seekBar2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_margin="8dp"
+                        android:layout_toLeftOf="@+id/tvYMax"
+                        android:layout_marginRight="5dp"
+                        android:max="150"
+                        android:paddingBottom="12dp" />
 
-                </LinearLayout>
+                    <SeekBar
+                        android:id="@+id/seekBar1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/seekBar2"
+                        android:layout_margin="8dp"
+                        android:layout_marginBottom="35dp"
+                        android:layout_toLeftOf="@+id/tvXMax"
+                        android:layout_marginRight="5dp"
+                        android:max="500"
+                        android:paddingBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/tvXMax"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/seekBar1"
+                        android:layout_alignParentRight="true"
+                        android:text="@string/dash"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <TextView
+                        android:id="@+id/tvYMax"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/seekBar2"
+                        android:layout_alignParentRight="true"
+                        android:text="@string/dash"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="right"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                </RelativeLayout>
 
                 <!-- 네 번째 페이지. content4 -->
                 <LinearLayout
@@ -153,6 +194,15 @@
 
                 </LinearLayout>
             </FrameLayout>
-        </RelativeLayout>
+
+            <!-- TabWidget의 id값이 반드시 "tabs"로 지정되어야 함. -->
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="8" />
+
+
+        </LinearLayout>
     </TabHost>
 </LinearLayout>
