@@ -1,3 +1,4 @@
+
 package com.example.smartfarm;
 
 import android.annotation.SuppressLint;
@@ -11,8 +12,14 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
 
+/**
+ * Custom implementation of the MarkerView.
+ *
+ * @author Philipp Jahoda
+ */
 @SuppressLint("ViewConstructor")
 public class MyMarkerView extends MarkerView {
+
     private final TextView tvContent;
 
     public MyMarkerView(Context context, int layoutResource) {
