@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="area1Btn" type="id"/>
+    <item name="area2Btn" type="id"/>
+    <item name="area3Btn" type="id"/>
+    <item name="area4Btn" type="id"/>
+    <item name="area5Btn" type="id"/>
+</resources>
