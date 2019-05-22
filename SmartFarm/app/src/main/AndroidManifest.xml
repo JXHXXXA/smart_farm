@@ -9,10 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Menu4Fragment" />
-        <activity android:name=".Menu3Fragment" />
-        <activity android:name=".Menu2Fragment" />
-        <activity android:name=".Menu1Fragment" />
         <activity android:name=".DashBoardActivity" />
         <activity android:name=".AreaActivity" />
         <activity android:name=".MainActivity" />
