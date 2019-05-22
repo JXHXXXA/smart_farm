@@ -33,12 +33,14 @@
             android:textSize="20dp" />
 
         <ImageView
+            android:id="@+id/verified"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="8"
             android:scaleX="0.3"
             android:scaleY="0.3"
-            android:src="@drawable/settings" />
+            android:src="@drawable/verified"
+            android:visibility="invisible" />
     </LinearLayout>
 
     <View
@@ -77,7 +79,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="right"
-                        android:padding="10dp"/>
+                        android:padding="10dp" />
 
                     <ScrollView
                         android:id="@+id/area_scroll"
@@ -90,8 +92,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center_horizontal"
-                            android:columnCount="4">
-                        </GridLayout>
+                            android:columnCount="4"></GridLayout>
 
                     </ScrollView>
 
@@ -103,17 +104,112 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <TabHost xmlns:android="http://schemas.android.com/apk/res/android"
                         android:id="@+id/tabHost2"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:text="SETTING" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="8"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingBottom="5dp">
+
+                                <Button
+                                    style="?android:attr/borderlessButtonStyle"
+                                    android:id="@+id/dash_board_onoff"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginVertical="10dp"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/btn_selector"
+                                    android:text="ON/OFF"
+                                    android:textSize="15dp" />
+
+                                <Button
+                                    style="?android:attr/borderlessButtonStyle"
+                                    android:id="@+id/dash_board_threshold"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginVertical="10dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/btn_selector"
+                                    android:text="임계치"
+                                    android:textSize="15dp" />
+
+                                <Button
+                                    style="?android:attr/borderlessButtonStyle"
+                                    android:id="@+id/dash_board_setting"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginVertical="10dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_marginRight="10dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/btn_selector"
+                                    android:text="설정값"
+                                    android:textSize="15dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <FrameLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:id="@+id/frame">
+                                    <View
+                                        android:id="@+id/view1"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#ffffff"
+                                        />
+                                    <View
+                                        android:id="@+id/view2"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#460B00FF"/>
+                                    <View
+                                        android:id="@+id/view3"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#F30000"/>
+
+                                    <!--여기@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-->
+      <!--                              <ScrollView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent">
+
+                                        <LinearLayout
+                                            android:id="@+id/on_off_view"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent">
+
+                                            <ToggleButton
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent" />
+
+                                        </LinearLayout>
+                                    </ScrollView>-->
+                                </FrameLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+
                     </TabHost>
                 </LinearLayout>
 
@@ -128,16 +224,17 @@
                         android:id="@+id/chart"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_above="@+id/seekBar1"/>
+                        android:layout_above="@+id/seekBar1" />
+
                     <SeekBar
                         android:id="@+id/seekBar2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
                         android:layout_alignParentLeft="true"
+                        android:layout_alignParentBottom="true"
                         android:layout_margin="8dp"
-                        android:layout_toLeftOf="@+id/tvYMax"
                         android:layout_marginRight="5dp"
+                        android:layout_toLeftOf="@+id/tvYMax"
                         android:max="150"
                         android:paddingBottom="12dp" />
 
@@ -147,9 +244,9 @@
                         android:layout_height="wrap_content"
                         android:layout_above="@+id/seekBar2"
                         android:layout_margin="8dp"
+                        android:layout_marginRight="5dp"
                         android:layout_marginBottom="35dp"
                         android:layout_toLeftOf="@+id/tvXMax"
-                        android:layout_marginRight="5dp"
                         android:max="500"
                         android:paddingBottom="12dp" />
 
@@ -159,10 +256,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignBottom="@+id/seekBar1"
                         android:layout_alignParentRight="true"
-                        android:text="@string/dash"
-                        android:layout_marginBottom="15dp"
                         android:layout_marginRight="10dp"
+                        android:layout_marginBottom="15dp"
                         android:gravity="right"
+                        android:text="@string/dash"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
 
                     <TextView
@@ -171,10 +268,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignBottom="@+id/seekBar2"
                         android:layout_alignParentRight="true"
-                        android:text="@string/dash"
-                        android:layout_marginBottom="15dp"
                         android:layout_marginRight="10dp"
+                        android:layout_marginBottom="15dp"
                         android:gravity="right"
+                        android:text="@string/dash"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
                 </RelativeLayout>
 

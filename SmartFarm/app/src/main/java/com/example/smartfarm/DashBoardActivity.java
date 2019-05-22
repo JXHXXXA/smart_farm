@@ -17,8 +17,12 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -58,88 +62,150 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
     LineChart chart;
     private SeekBar seekBarX;
     private TextView tvX;
+    ImageView imgView;
+    View textView1;
+    View textView2;
+    View textView3;
+    FrameLayout frame;
+    Button button1;
+    Button button2;
+    Button button3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dash_board);
-
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
 
         // 첫 번째 Tab. (탭 표시 텍스트:"TAB 1"), (페이지 뷰:"content1")
-        TabHost.TabSpec ts1 = tabHost1.newTabSpec("Tab Spec 1");
+        final TabHost.TabSpec ts1 = tabHost1.newTabSpec("Tab1");
         ts1.setContent(R.id.content1);
         ts1.setIndicator("현재값");
         tabHost1.addTab(ts1);
 
         // 두 번째 Tab. (탭 표시 텍스트:"TAB 2"), (페이지 뷰:"content2")
-        TabHost.TabSpec ts2 = tabHost1.newTabSpec("Tab Spec 2");
+        final TabHost.TabSpec ts2 = tabHost1.newTabSpec("Tab2");
         ts2.setContent(R.id.content2);
         ts2.setIndicator("장치설정");
         tabHost1.addTab(ts2);
 
         // 세 번째 Tab. (탭 표시 텍스트:"TAB 3"), (페이지 뷰:"content3")
-        TabHost.TabSpec ts3 = tabHost1.newTabSpec("Tab Spec 3");
+        final TabHost.TabSpec ts3 = tabHost1.newTabSpec("Tab3");
         ts3.setContent(R.id.content3);
         ts3.setIndicator("통계");
         tabHost1.addTab(ts3);
 
         // 세 번째 Tab. (탭 표시 텍스트:"TAB 4"), (페이지 뷰:"content4")
-        TabHost.TabSpec ts4 = tabHost1.newTabSpec("Tab Spec 4");
+        final TabHost.TabSpec ts4 = tabHost1.newTabSpec("Tab4");
         ts4.setContent(R.id.content4);
         ts4.setIndicator("오류");
         tabHost1.addTab(ts4);
 
-        /* ---------------------------Grid-------------------------- */
-        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
-        int width = dm.widthPixels;
-        int height = dm.heightPixels;
-        gl = (GridLayout) findViewById(R.id.dash_board_grid);
+        imgView = (ImageView) findViewById(R.id.verified);
+        tabHost1.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                if (ts1.getTag().equals(tabId)) {
+                    imgView.setVisibility(View.INVISIBLE);
+                }
 
-        System.out.println("dm : " + dm.density);
-        System.out.println("width : " + width);
-        // mButton.setId(Integer.parseInt("area_"+num));
-        // mButton.setOnClickListener(mOnClick); //버튼에 OnClickListener를 지정(OnClickListener)
+                if (ts2.getTag().equals(tabId)) {
+                    imgView.setVisibility(View.VISIBLE);
+                }
 
-        for (int i = 0; i < 32; i++) {
-            mButton = new Button(this);
-//            mButton.setId(@+id/area_bt);
-            mButton.setWidth(width / 5);
-            mButton.setHeight(width / 4);
-            mButton.setText("센서 " + Integer.toString(i + 1)); //버튼에 들어갈 텍스트를 지정(String)
-            mButton.getBackground().setColorFilter(Color.parseColor("#b5ddc0"), PorterDuff.Mode.DARKEN);
-            params = new GridLayout.LayoutParams();
-            float num = dm.density;
-            /* 첫번째 라인*/
-            if (i % 4 == 0) {
-                params.setMargins(Math.round(3 * num), Math.round(num), Math.round(num), Math.round(num));
-                if (i >= 4)
-                    params.setMargins(3 * Math.round(num), 0, Math.round(num), Math.round(num));
-            } else { /*네번째 라인 */
-                params.setMargins(0, Math.round(num), Math.round(num), Math.round(num));
-                if (i >= 4)
-                    params.setMargins(0, 0, Math.round(num), Math.round(num));
+                if (ts3.getTag().equals(tabId)) {
+                    imgView.setVisibility(View.VISIBLE);
+                }
+
+                if (ts4.getTag().equals(tabId)) {
+                    imgView.setVisibility(View.VISIBLE);
+                }
             }
+        });
 
-            mButton.setId(i);
+        imgView.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("헤헤");
+            }
+        });
 
-            final int position = i + 1;
-            gl.addView(mButton, i, params);
+
+        getSensorValue();
+        getTime();
+        chart();
+
+
+        setButtonSeleted();
+
+
+        textView1 = (View) findViewById(R.id.view1);
+        textView2 = (View) findViewById(R.id.view2);
+        textView3 = (View) findViewById(R.id.view3);
+
+        frame = (FrameLayout) findViewById(R.id.frame);
+        frame.removeView(textView2);
+        frame.removeView(textView3);
+
+    }
+
+    private void setButtonSeleted() {
+        button1 = (Button) findViewById(R.id.dash_board_onoff);
+        button1.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                button1.setSelected(true);
+                button2.setSelected(false);
+                button3.setSelected(false);
+                changeView(0);
+            }
+        });
+
+        button2 = (Button) findViewById(R.id.dash_board_threshold);
+        button2.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                button1.setSelected(false);
+                button2.setSelected(true);
+                button3.setSelected(false);
+                changeView(1);
+            }
+        });
+
+        button3 = (Button) findViewById(R.id.dash_board_setting);
+        button3.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                button1.setSelected(false);
+                button2.setSelected(false);
+                button3.setSelected(true);
+                changeView(2);
+            }
+        });
+    }
+
+
+    private void changeView(int index) {
+        // 0 번째 뷰 제거. (뷰가 하나이므로, 0 번째 뷰를 제거하면 모든 뷰가 제거됨.)
+        frame.removeViewAt(0);
+
+        // index에 해당하는 textView 표시
+        switch (index) {
+            case 0:
+                frame.addView(textView1);
+                break;
+            case 1:
+                frame.addView(textView2);
+                break;
+            case 2:
+                frame.addView(textView3);
+                break;
         }
+    }
 
 
-
-        /* 일단 현재 시간 받아오는거로..*/
-        time = (TextView) findViewById(R.id.dash_board_time);
-        time.setText(DateUtils.formatDateTime(getBaseContext(), System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE));
-
-        tvX = findViewById(R.id.tvXMax);
-        seekBarX = findViewById(R.id.seekBar1);
-        seekBarX.setOnSeekBarChangeListener(this);
-
-        chart = findViewById(R.id.chart);
-
+    private void chart() {
         // no description text
         chart.getDescription().setEnabled(false);
 
@@ -200,6 +266,57 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
 
         YAxis rightAxis = chart.getAxisRight();
         rightAxis.setEnabled(false);
+    }
+
+    private void getTime() {
+        /* 일단 현재 시간 받아오는거로..*/
+        time = (TextView) findViewById(R.id.dash_board_time);
+        time.setText(DateUtils.formatDateTime(getBaseContext(), System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE));
+
+        tvX = findViewById(R.id.tvXMax);
+        seekBarX = findViewById(R.id.seekBar1);
+        seekBarX.setOnSeekBarChangeListener(this);
+
+        chart = findViewById(R.id.chart);
+    }
+
+    private void getSensorValue() {
+        /* ---------------------------Grid-------------------------- */
+        DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
+        gl = (GridLayout) findViewById(R.id.dash_board_grid);
+
+        System.out.println("dm : " + dm.density);
+        System.out.println("width : " + width);
+        // mButton.setId(Integer.parseInt("area_"+num));
+        // mButton.setOnClickListener(mOnClick); //버튼에 OnClickListener를 지정(OnClickListener)
+
+        for (int i = 0; i < 32; i++) {
+            mButton = new Button(this);
+//            mButton.setId(@+id/area_bt);
+            mButton.setWidth(width / 5);
+            mButton.setHeight(width / 4);
+            mButton.setText("센서 " + Integer.toString(i + 1)); //버튼에 들어갈 텍스트를 지정(String)
+            mButton.getBackground().setColorFilter(Color.parseColor("#b5ddc0"), PorterDuff.Mode.DARKEN);
+            params = new GridLayout.LayoutParams();
+            float num = dm.density;
+            /* 첫번째 라인*/
+            if (i % 4 == 0) {
+                params.setMargins(Math.round(3 * num), Math.round(num), Math.round(num), Math.round(num));
+                if (i >= 4)
+                    params.setMargins(3 * Math.round(num), 0, Math.round(num), Math.round(num));
+            } else { /*네번째 라인 */
+                params.setMargins(0, Math.round(num), Math.round(num), Math.round(num));
+                if (i >= 4)
+                    params.setMargins(0, 0, Math.round(num), Math.round(num));
+            }
+
+            mButton.setId(i);
+
+            final int position = i + 1;
+            gl.addView(mButton, i, params);
+        }
     }
 
     private void setData(int count, float range) {
@@ -394,8 +511,10 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
     }
 
     @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {}
+    public void onStartTrackingTouch(SeekBar seekBar) {
+    }
 
     @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {}
+    public void onStopTrackingTouch(SeekBar seekBar) {
+    }
 }
