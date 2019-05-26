@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/farm_layout"
+    android:layout_width="match_parent"
+    android:layout_height="280dp"
+    android:layout_marginHorizontal="20dp"
+    android:layout_marginBottom="20dp"
+    tools:context=".Farm">
+
+        <ImageView
+            android:id="@+id/farm_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@drawable/farm1" />
+
+        <LinearLayout
+            android:id="@+id/farm_text_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/farm_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="20dp"
+                android:gravity="right"
+                android:text="코끼리 하마 농장"
+                android:textColor="#ffffff"
+                android:textSize="40dp" />
+
+            <TextView
+                android:id="@+id/farm_location"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="20dp"
+                android:gravity="right"
+                android:text="전라남도 보성군"
+                android:textColor="#ffffff"
+                android:textSize="30dp" />
+
+            <TextView
+                android:id="@+id/farm_total_area"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="20dp"
+                android:gravity="right"
+                android:text="총 6동"
+                android:textColor="#ffffff"
+                android:textSize="30dp" />
+        </LinearLayout>
+</RelativeLayout>
