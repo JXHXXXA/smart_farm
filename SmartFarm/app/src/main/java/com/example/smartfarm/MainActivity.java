@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         farm1.setFarmName("코끼리하마농장");
         farm1.setFarmLocation("전라남도보성군");
         farm1.setFarmTotalArea("총6동");
+        farm1.setFarm_layout();
         farm_list.addView(farm1);
 
         farm1.setOnClickListener(new View.OnClickListener() {        // Image를 클릭한 경우
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         farm2.setFarmName("돼지사과농장");
         farm2.setFarmLocation("경상남도진주시");
         farm2.setFarmTotalArea("총3동");
+        farm2.setFarm_layout();
         farm_list.addView(farm2);
 
         farm3 = new Farm(this);
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         farm3.setFarmName("커피농장");
         farm3.setFarmLocation("충청북도천안시");
         farm3.setFarmTotalArea("총2동");
+        farm3.setFarm_layout();
         farm_list.addView(farm3);
 
     }

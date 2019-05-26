@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -72,6 +73,12 @@ public class Farm extends RelativeLayout {
         total_area.setText(total_area_string);
 
         typedArray.recycle();
+    }
+
+    void setFarm_layout() {
+//        ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) farm_layout.getLayoutParams();
+//        params.height = image.getHeight();
+        farm_layout.setMinimumHeight(image.getHeight());
     }
 
     void setFarmImage(int image_resID) {
