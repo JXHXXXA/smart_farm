@@ -36,7 +36,6 @@ public class AreaActivity extends AppCompatActivity {
             }
         });
 
-        int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float)20, getResources().getDisplayMetrics());
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         int height = dm.heightPixels;

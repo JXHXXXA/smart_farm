@@ -285,7 +285,6 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
 
     private void getSensorValue() {
         /* ---------------------------Grid-------------------------- */
-        int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float)5, getResources().getDisplayMetrics());
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         int height = dm.heightPixels;
