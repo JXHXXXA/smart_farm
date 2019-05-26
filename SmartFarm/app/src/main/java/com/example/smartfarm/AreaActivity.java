@@ -47,8 +47,8 @@ public class AreaActivity extends AppCompatActivity {
 
         for (int i = 0; i < 8; i++) {
             areaButton = new Button(this);
-            areaButton.setWidth(width/2-value*3);
-            areaButton.setHeight(width/2-value*3);
+            areaButton.setWidth((width - value*3)/2);
+            areaButton.setHeight((width - value*3)/2);
             areaButton.setText(Integer.toString(i + 1) + "동");
             areaButton.setId(i);
 

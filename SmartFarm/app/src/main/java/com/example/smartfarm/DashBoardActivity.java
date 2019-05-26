@@ -299,8 +299,8 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         for (int i = 0; i < 32; i++) {
             mButton = new Button(this);
 //            areaButton.setId(@+id/area_bt);
-            mButton.setWidth(width/4 - value*5/4);
-            mButton.setHeight(width/4 - value*5/4);
+            mButton.setWidth((width - value*5)/4);
+            mButton.setHeight((width - value*5)/4);
             mButton.setText("센서 " + Integer.toString(i + 1)); //버튼에 들어갈 텍스트를 지정(String)
             mButton.getBackground().setColorFilter(Color.parseColor("#b5ddc0"), PorterDuff.Mode.DARKEN);
             params = new GridLayout.LayoutParams();
