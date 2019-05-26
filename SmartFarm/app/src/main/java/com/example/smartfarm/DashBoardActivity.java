@@ -292,7 +292,7 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         gl = (GridLayout) findViewById(R.id.dash_board_grid);
 
         DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
-        float dp = 5f;
+        float dp = 10f;
         float fpixels = metrics.density * dp;
         int pixels = (int) (fpixels + 0.5f);
 
