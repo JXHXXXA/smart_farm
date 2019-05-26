@@ -102,7 +102,7 @@
                 <LinearLayout
                     android:id="@+id/content2"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
 
                     <TabHost xmlns:android="http://schemas.android.com/apk/res/android"
@@ -170,24 +170,25 @@
 
                                 <ScrollView
                                     android:layout_width="match_parent"
-                                    android:layout_height="500dp">
+                                    android:layout_height="match_parent">
 
                                     <LinearLayout
                                         android:layout_width="match_parent"
-                                        android:layout_height="wrap_content">
+                                        android:layout_height="match_parent"
+                                        android:orientation="vertical">
 
                                         <FrameLayout
                                             android:id="@+id/frame"
                                             android:layout_width="match_parent"
-                                            android:layout_height="wrap_content">
-
-
-                                            <View
+                                            android:layout_height="500dp"
+                                            android:layout_gravity="center_horizontal" >
+                                            <SeekBar
                                                 android:id="@+id/view1"
                                                 android:layout_width="match_parent"
-                                                android:layout_height="match_parent"
-                                                android:background="#ffffff"
-                                                android:orientation="vertical" />
+                                                android:layout_height="wrap_content"
+                                                android:max="100"
+                                                android:thumb="@drawable/seekbar_color_thumb"
+                                                android:progressDrawable="@drawable/seekbar_color"/>
 
                                             <View
                                                 android:id="@+id/view2"
@@ -201,29 +202,13 @@
                                                 android:layout_height="match_parent"
                                                 android:background="#F30000" />
 
-                                            <!--여기@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-->
-                                            <!--                              <ScrollView
-                                                                              android:layout_width="match_parent"
-                                                                              android:layout_height="match_parent">
-
-                                                                              <LinearLayout
-                                                                                  android:id="@+id/on_off_view"
-                                                                                  android:layout_width="match_parent"
-                                                                                  android:layout_height="match_parent">
-
-                                                                                  <ToggleButton
-                                                                                      android:layout_width="match_parent"
-                                                                                      android:layout_height="match_parent" />
-
-                                                                              </LinearLayout>
-                                                                          </ScrollView>-->
+                                            <!--    <ToggleButton>     -->
 
                                         </FrameLayout>
                                     </LinearLayout>
                                 </ScrollView>
                             </LinearLayout>
                         </LinearLayout>
-
                     </TabHost>
                 </LinearLayout>
 

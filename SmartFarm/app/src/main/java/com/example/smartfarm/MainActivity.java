@@ -11,7 +11,9 @@ import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity {
     LinearLayout farm_list;
-    Farm farm;
+    Farm farm1;
+    Farm farm2;
+    Farm farm3;
     ImageView backImg;
 
     @Override
@@ -35,26 +37,35 @@ public class MainActivity extends AppCompatActivity {
 
         farm_list = (LinearLayout) findViewById(R.id.farm_list);
 
-        farm = new Farm(this);
-        farm.setFarmImage(R.drawable.farm1);
-        farm.setFarmName("코끼리하마농장");
-        farm.setFarmLocation("전라남도보성군");
-        farm.setFarmTotalArea("총6동");
-        farm_list.addView(farm);
+        farm1 = new Farm(this);
+        farm1.setFarmImage(R.drawable.farm1);
+        farm1.setFarmName("코끼리하마농장");
+        farm1.setFarmLocation("전라남도보성군");
+        farm1.setFarmTotalArea("총6동");
+        farm_list.addView(farm1);
 
-        farm = new Farm(this);
-        farm.setFarmImage(R.drawable.farm2);
-        farm.setFarmName("돼지사과농장");
-        farm.setFarmLocation("경상남도진주시");
-        farm.setFarmTotalArea("총3동");
-        farm_list.addView(farm);
+        farm1.setOnClickListener(new View.OnClickListener() {        // Image를 클릭한 경우
+            public void onClick(View v) {
+                Intent intent = new Intent(
+                        getApplicationContext(), // 현재 화면의 제어권자
+                        AreaActivity.class); // 다음 넘어갈 클래스 지정
+                startActivity(intent); // 다음 화면으로 넘어간다
+            }
+        });
 
-        farm = new Farm(this);
-        farm.setFarmImage(R.drawable.farm3);
-        farm.setFarmName("커피농장");
-        farm.setFarmLocation("충청북도천안시");
-        farm.setFarmTotalArea("총2동");
-        farm_list.addView(farm);
+        farm2 = new Farm(this);
+        farm2.setFarmImage(R.drawable.farm2);
+        farm2.setFarmName("돼지사과농장");
+        farm2.setFarmLocation("경상남도진주시");
+        farm2.setFarmTotalArea("총3동");
+        farm_list.addView(farm2);
+
+        farm3 = new Farm(this);
+        farm3.setFarmImage(R.drawable.farm3);
+        farm3.setFarmName("커피농장");
+        farm3.setFarmLocation("충청북도천안시");
+        farm3.setFarmTotalArea("총2동");
+        farm_list.addView(farm3);
 
     }
 }

@@ -63,7 +63,7 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
     private SeekBar seekBarX;
     private TextView tvX;
     ImageView imgView;
-    View textView1;
+    SeekBar textView1;
     View textView2;
     View textView3;
     FrameLayout frame;
@@ -138,8 +138,8 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         chart();
         setButtonSeleted();
 
-
-        textView1 = (View) findViewById(R.id.view1);
+        /* 장치설정의 3가지 view */
+        textView1 = (SeekBar) findViewById(R.id.view1);
         textView2 = (View) findViewById(R.id.view2);
         textView3 = (View) findViewById(R.id.view3);
 
@@ -149,6 +149,7 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         button1.setSelected(true);
         button2.setSelected(false);
         button3.setSelected(false);
+
 
     }
 
