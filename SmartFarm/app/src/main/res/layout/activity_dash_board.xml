@@ -124,8 +124,8 @@
                                 android:paddingBottom="5dp">
 
                                 <Button
-                                    style="?android:attr/borderlessButtonStyle"
                                     android:id="@+id/dash_board_onoff"
+                                    style="?android:attr/borderlessButtonStyle"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_marginVertical="10dp"
@@ -137,8 +137,8 @@
                                     android:textSize="15dp" />
 
                                 <Button
-                                    style="?android:attr/borderlessButtonStyle"
                                     android:id="@+id/dash_board_threshold"
+                                    style="?android:attr/borderlessButtonStyle"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_marginVertical="10dp"
@@ -150,8 +150,8 @@
                                     android:textSize="15dp" />
 
                                 <Button
-                                    style="?android:attr/borderlessButtonStyle"
                                     android:id="@+id/dash_board_setting"
+                                    style="?android:attr/borderlessButtonStyle"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_marginVertical="10dp"
@@ -168,47 +168,61 @@
                                 android:layout_height="match_parent"
                                 android:orientation="vertical">
 
-                                <FrameLayout
+                                <ScrollView
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:id="@+id/frame">
-                                    <View
-                                        android:id="@+id/view1"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:background="#ffffff"
-                                        />
-                                    <View
-                                        android:id="@+id/view2"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:background="#460B00FF"/>
-                                    <View
-                                        android:id="@+id/view3"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:background="#F30000"/>
+                                    android:layout_height="500dp">
 
-                                    <!--여기@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-->
-      <!--                              <ScrollView
+                                    <LinearLayout
                                         android:layout_width="match_parent"
-                                        android:layout_height="match_parent">
+                                        android:layout_height="wrap_content">
 
-                                        <LinearLayout
-                                            android:id="@+id/on_off_view"
+                                        <FrameLayout
+                                            android:id="@+id/frame"
                                             android:layout_width="match_parent"
-                                            android:layout_height="match_parent">
+                                            android:layout_height="wrap_content">
 
-                                            <ToggleButton
+
+                                            <View
+                                                android:id="@+id/view1"
                                                 android:layout_width="match_parent"
-                                                android:layout_height="match_parent" />
+                                                android:layout_height="match_parent"
+                                                android:background="#ffffff"
+                                                android:orientation="vertical" />
 
-                                        </LinearLayout>
-                                    </ScrollView>-->
-                                </FrameLayout>
+                                            <View
+                                                android:id="@+id/view2"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"
+                                                android:background="#460B00FF" />
+
+                                            <View
+                                                android:id="@+id/view3"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"
+                                                android:background="#F30000" />
+
+                                            <!--여기@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-->
+                                            <!--                              <ScrollView
+                                                                              android:layout_width="match_parent"
+                                                                              android:layout_height="match_parent">
+
+                                                                              <LinearLayout
+                                                                                  android:id="@+id/on_off_view"
+                                                                                  android:layout_width="match_parent"
+                                                                                  android:layout_height="match_parent">
+
+                                                                                  <ToggleButton
+                                                                                      android:layout_width="match_parent"
+                                                                                      android:layout_height="match_parent" />
+
+                                                                              </LinearLayout>
+                                                                          </ScrollView>-->
+
+                                        </FrameLayout>
+                                    </LinearLayout>
+                                </ScrollView>
                             </LinearLayout>
                         </LinearLayout>
-
 
                     </TabHost>
                 </LinearLayout>

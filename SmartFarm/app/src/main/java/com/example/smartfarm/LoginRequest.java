@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class LoginRequest extends StringRequest {
 
-    final static private String URL = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/login";
+    final static private String URL = "https://uxilt2te-api.ap-northeast-2.amazonaws.com/dev/login";
     private Map<String, String> parameters;
 
     public LoginRequest(String id, String password, Response.Listener<String> listener){
@@ -16,12 +16,10 @@ public class LoginRequest extends StringRequest {
         parameters = new HashMap<>();
         parameters.put("id",id);
         parameters.put("password",password);
-        System.out.println("LoginRequest : " + parameters);
     }
 
     @Override
     public Map<String, String> getParams(){
-        System.out.println("getParams : " + parameters);
         return parameters;
     }
 }

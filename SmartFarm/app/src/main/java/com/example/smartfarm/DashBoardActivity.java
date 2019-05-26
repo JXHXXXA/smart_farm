@@ -132,11 +132,10 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         });
 
 
+        /* here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
         getSensorValue();
         getTime();
         chart();
-
-
         setButtonSeleted();
 
 
@@ -147,6 +146,9 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         frame = (FrameLayout) findViewById(R.id.frame);
         frame.removeView(textView2);
         frame.removeView(textView3);
+        button1.setSelected(true);
+        button2.setSelected(false);
+        button3.setSelected(false);
 
     }
 
@@ -184,7 +186,6 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
             }
         });
     }
-
 
     private void changeView(int index) {
         // 0 번째 뷰 제거. (뷰가 하나이므로, 0 번째 뷰를 제거하면 모든 뷰가 제거됨.)
