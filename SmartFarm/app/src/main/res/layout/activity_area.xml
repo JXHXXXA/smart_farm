@@ -59,8 +59,7 @@
                 android:id="@+id/area_grid"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="40dp"
-                android:layout_marginHorizontal="40dp"
+                android:layout_margin ="40dp"
                 android:columnCount="2">
             </GridLayout>
     </ScrollView>

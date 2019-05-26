@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -284,6 +285,7 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
 
     private void getSensorValue() {
         /* ---------------------------Grid-------------------------- */
+        int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float)5, getResources().getDisplayMetrics());
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         int height = dm.heightPixels;
@@ -297,21 +299,16 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         for (int i = 0; i < 32; i++) {
             mButton = new Button(this);
 //            areaButton.setId(@+id/area_bt);
-            mButton.setWidth(width / 5);
-            mButton.setHeight(width / 4);
+            mButton.setWidth(width/4 - value*5/4);
+            mButton.setHeight(width/4 - value*5/4);
             mButton.setText("센서 " + Integer.toString(i + 1)); //버튼에 들어갈 텍스트를 지정(String)
             mButton.getBackground().setColorFilter(Color.parseColor("#b5ddc0"), PorterDuff.Mode.DARKEN);
             params = new GridLayout.LayoutParams();
-            float num = dm.density;
-            /* 첫번째 라인*/
-            if (i % 4 == 0) {
-                params.setMargins(Math.round(3 * num), Math.round(num), Math.round(num), Math.round(num));
-                if (i >= 4)
-                    params.setMargins(3 * Math.round(num), 0, Math.round(num), Math.round(num));
-            } else { /*네번째 라인 */
-                params.setMargins(0, Math.round(num), Math.round(num), Math.round(num));
-                if (i >= 4)
-                    params.setMargins(0, 0, Math.round(num), Math.round(num));
+
+            if((i+1)%4!=0){
+                params.setMargins(0,0,value,value);
+            } else {
+                params.setMargins(0,0,0,value);
             }
 
             mButton.setId(i);
