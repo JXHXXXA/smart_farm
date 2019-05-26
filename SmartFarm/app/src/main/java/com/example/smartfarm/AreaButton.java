@@ -1,0 +1,60 @@
+package com.example.smartfarm;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+
+public class AreaButton extends LinearLayout {
+    Button btn;
+
+    public AreaButton(Context context) {
+        super(context);
+        initView();
+    }
+
+    public AreaButton(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initView();
+        getAttrs(attrs);
+    }
+
+    public AreaButton(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs);
+        initView();
+        getAttrs(attrs, defStyle);
+    }
+
+    private void initView() {
+        String infService = Context.LAYOUT_INFLATER_SERVICE;
+        LayoutInflater li = (LayoutInflater) getContext().getSystemService(infService);
+        View v = li.inflate(R.layout.area_button, this, false);
+        addView(v);
+
+        btn = findViewById(R.id.area_button);
+    }
+
+    private void getAttrs(AttributeSet attrs) {
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.Farm);
+        setTypeArray(typedArray);
+    }
+
+    private void getAttrs(AttributeSet attrs, int defStyle) {
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.Farm, defStyle, 0);
+        setTypeArray(typedArray);
+    }
+
+    private void setTypeArray(TypedArray typedArray) {
+        String btnText = typedArray.getString(R.styleable.AreaButton_text);
+        btn.setText(btnText);
+
+        typedArray.recycle();
+    }
+
+    void setBtnText(String btnText) {
+        btn.setText(btnText);
+    }
+}

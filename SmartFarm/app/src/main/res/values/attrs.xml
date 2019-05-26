@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="Farm">
-        <attr name="farm_layout" format="reference|integer" />
-        <attr name="farm_text_layout" format="reference|integer" />
-        <attr name="farm_image" format="reference|integer" />
-        <attr name="farm_name" format="reference|string" />
-        <attr name="farm_location" format="reference|string" />
-        <attr name="farm_total_area" format="reference|string" />
+        <attr name="layout" format="reference|integer" />
+        <attr name="text_layout" format="reference|integer" />
+        <attr name="image" format="reference|integer" />
+        <attr name="name" format="reference|string" />
+        <attr name="location" format="reference|string" />
+        <attr name="total_area" format="reference|string" />
+    </declare-styleable>
+
+    <declare-styleable name="AreaButton">
+        <attr name="text" format="reference|integer" />
     </declare-styleable>
 </resources>

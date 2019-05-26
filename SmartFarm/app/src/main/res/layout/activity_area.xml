@@ -58,9 +58,8 @@
             <GridLayout
                 android:id="@+id/area_grid"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:columnCount="2">
+                android:layout_height="wrap_content"
+                android:columnCount="4">
             </GridLayout>
 
     </ScrollView>

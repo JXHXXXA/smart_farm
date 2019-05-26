@@ -4,6 +4,8 @@ package com.example.smartfarm;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -16,13 +18,13 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 public class AreaActivity extends AppCompatActivity {
-    Button mButton;
+    AreaButton mButton;
     GridLayout gl;
-    GridLayout.LayoutParams params;
     ScrollView sv;
     ImageView backImg;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,35 +45,16 @@ public class AreaActivity extends AppCompatActivity {
         int height = dm.heightPixels;
         gl = (GridLayout) findViewById(R.id.area_grid);
 
-        System.out.println("dm : " + dm.density);
-        System.out.println("width : " + width);
         // mButton.setId(Integer.parseInt("area_"+num));
         // mButton.setOnClickListener(mOnClick); //버튼에 OnClickListener를 지정(OnClickListener)
 
         for (int i = 0; i < 8; i++) {
-            mButton = new Button(this);
-//            mButton.setId(@+id/area_bt);
-            mButton.setWidth(width / 3);
-            mButton.setHeight(width / 3);
-            mButton.setText(Integer.toString(i + 1) + "동"); //버튼에 들어갈 텍스트를 지정(String)
-            mButton.getBackground().setColorFilter(Color.parseColor("#b5ddc0"), PorterDuff.Mode.DARKEN);
-            params = new GridLayout.LayoutParams();
-
-            /* 첫번째 라인*/
-            if (i % 2 == 0) {
-                params.setMargins(Math.round(45 * dm.density), Math.round(30 * dm.density), Math.round(30 * dm.density), Math.round(30 * dm.density));
-                if (i >= 2)
-                    params.setMargins(Math.round(45 * dm.density), 0, Math.round(30 * dm.density), Math.round(30 * dm.density));
-            } else { /*두번째 라인 */
-                params.setMargins(0, Math.round(30 * dm.density), Math.round(30 * dm.density), Math.round(30 * dm.density));
-                if (i >= 2)
-                    params.setMargins(0, 0, Math.round(30 * dm.density), Math.round(30 * dm.density));
-            }
-
+            mButton = new AreaButton(this);
+            mButton.setBtnText(Integer.toString(i + 1) + "동");
             mButton.setId(i);
 
             final int position = i+1;
-            gl.addView(mButton, i, params);
+            gl.addView(mButton, i);
 
             mButton.setOnClickListener(new View.OnClickListener() {
                 @Override

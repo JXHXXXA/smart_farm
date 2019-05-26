@@ -59,16 +59,16 @@ public class Farm extends RelativeLayout {
     }
 
     private void setTypeArray(TypedArray typedArray) {
-        int image_resID = typedArray.getResourceId(R.styleable.Farm_farm_image, R.drawable.farm1);
+        int image_resID = typedArray.getResourceId(R.styleable.Farm_image, R.drawable.farm1);
         image.setImageResource(image_resID);
 
-        String name_string = typedArray.getString(R.styleable.Farm_farm_name);
+        String name_string = typedArray.getString(R.styleable.Farm_name);
         name.setText(name_string);
 
-        String location_string = typedArray.getString(R.styleable.Farm_farm_location);
+        String location_string = typedArray.getString(R.styleable.Farm_location);
         location.setText(location_string);
 
-        String total_area_string = typedArray.getString(R.styleable.Farm_farm_total_area);
+        String total_area_string = typedArray.getString(R.styleable.Farm_total_area);
         total_area.setText(total_area_string);
 
         typedArray.recycle();
