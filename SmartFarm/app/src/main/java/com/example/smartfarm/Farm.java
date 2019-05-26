@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class Farm extends RelativeLayout {
-    RelativeLayout layout;
+    RelativeLayout farm_layout;
     ImageView image;
     LinearLayout text_layout;
     TextView name;
@@ -40,7 +40,7 @@ public class Farm extends RelativeLayout {
         LayoutInflater li = (LayoutInflater) getContext().getSystemService(infService);
         View v = li.inflate(R.layout.farm, this, false);
         addView(v);
-        layout = (RelativeLayout) findViewById(R.id.farm_layout);
+        farm_layout = (RelativeLayout) findViewById(R.id.farm_layout);
         image = (ImageView) findViewById(R.id.farm_image);
         text_layout = (LinearLayout) findViewById(R.id.farm_text_layout);
         name = (TextView) findViewById(R.id.farm_name);
@@ -49,26 +49,26 @@ public class Farm extends RelativeLayout {
     }
 
     private void getAttrs(AttributeSet attrs) {
-        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.Farm);
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.farm);
         setTypeArray(typedArray);
     }
 
     private void getAttrs(AttributeSet attrs, int defStyle) {
-        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.Farm, defStyle, 0);
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.farm, defStyle, 0);
         setTypeArray(typedArray);
     }
 
     private void setTypeArray(TypedArray typedArray) {
-        int image_resID = typedArray.getResourceId(R.styleable.Farm_image, R.drawable.farm1);
+        int image_resID = typedArray.getResourceId(R.styleable.farm_image, R.drawable.farm1);
         image.setImageResource(image_resID);
 
-        String name_string = typedArray.getString(R.styleable.Farm_name);
+        String name_string = typedArray.getString(R.styleable.farm_name);
         name.setText(name_string);
 
-        String location_string = typedArray.getString(R.styleable.Farm_location);
+        String location_string = typedArray.getString(R.styleable.farm_location);
         location.setText(location_string);
 
-        String total_area_string = typedArray.getString(R.styleable.Farm_total_area);
+        String total_area_string = typedArray.getString(R.styleable.farm_total_area);
         total_area.setText(total_area_string);
 
         typedArray.recycle();

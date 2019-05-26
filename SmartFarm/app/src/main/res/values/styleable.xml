@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="farm">
+        <attr name="image" format="integer"/>
+        <attr name="name" format="string"/>
+        <attr name="location" format="string"/>
+        <attr name="total_area" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="area">
+        <attr name="btn_text" format="string"/>
+    </declare-styleable>
+</resources>

@@ -291,12 +291,12 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
 
         System.out.println("dm : " + dm.density);
         System.out.println("width : " + width);
-        // mButton.setId(Integer.parseInt("area_"+num));
-        // mButton.setOnClickListener(mOnClick); //버튼에 OnClickListener를 지정(OnClickListener)
+        // areaButton.setId(Integer.parseInt("area_"+num));
+        // areaButton.setOnClickListener(mOnClick); //버튼에 OnClickListener를 지정(OnClickListener)
 
         for (int i = 0; i < 32; i++) {
             mButton = new Button(this);
-//            mButton.setId(@+id/area_bt);
+//            areaButton.setId(@+id/area_bt);
             mButton.setWidth(width / 5);
             mButton.setHeight(width / 4);
             mButton.setText("센서 " + Integer.toString(i + 1)); //버튼에 들어갈 텍스트를 지정(String)

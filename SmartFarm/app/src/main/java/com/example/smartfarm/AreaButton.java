@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 public class AreaButton extends LinearLayout {
+    LinearLayout layout;
     Button btn;
 
     public AreaButton(Context context) {
@@ -34,21 +35,22 @@ public class AreaButton extends LinearLayout {
         View v = li.inflate(R.layout.area_button, this, false);
         addView(v);
 
+//        layout = (LinearLayout) findViewById(R.id.area_view);
         btn = findViewById(R.id.area_button);
     }
 
     private void getAttrs(AttributeSet attrs) {
-        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.Farm);
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.area);
         setTypeArray(typedArray);
     }
 
     private void getAttrs(AttributeSet attrs, int defStyle) {
-        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.Farm, defStyle, 0);
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.area, defStyle, 0);
         setTypeArray(typedArray);
     }
 
     private void setTypeArray(TypedArray typedArray) {
-        String btnText = typedArray.getString(R.styleable.AreaButton_text);
+        String btnText = typedArray.getString(R.styleable.area_btn_text);
         btn.setText(btnText);
 
         typedArray.recycle();

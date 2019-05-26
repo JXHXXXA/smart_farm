@@ -2,29 +2,25 @@
 package com.example.smartfarm;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 public class AreaActivity extends AppCompatActivity {
-    AreaButton mButton;
+    Button areaButton;
     GridLayout gl;
     ScrollView sv;
     ImageView backImg;
+    GridLayout.LayoutParams params;
 
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,23 +36,33 @@ public class AreaActivity extends AppCompatActivity {
             }
         });
 
+        int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (float)20, getResources().getDisplayMetrics());
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
         int height = dm.heightPixels;
         gl = (GridLayout) findViewById(R.id.area_grid);
 
-        // mButton.setId(Integer.parseInt("area_"+num));
-        // mButton.setOnClickListener(mOnClick); //버튼에 OnClickListener를 지정(OnClickListener)
+        // areaButton.setId(Integer.parseInt("area_"+num));
+        // areaButton.setOnClickListener(mOnClick); //버튼에 OnClickListener를 지정(OnClickListener)
 
         for (int i = 0; i < 8; i++) {
-            mButton = new AreaButton(this);
-            mButton.setBtnText(Integer.toString(i + 1) + "동");
-            mButton.setId(i);
+            areaButton = new Button(this);
+            areaButton.setWidth(width/2-value*3);
+            areaButton.setHeight(width/2-value*3);
+            areaButton.setText(Integer.toString(i + 1) + "동");
+            areaButton.setId(i);
+
+            params = new GridLayout.LayoutParams();
+            if(i%2==0){
+                params.setMargins(0,0,value,value*2);
+            } else{
+                params.setMargins(value,0,0,value*2);
+            }
 
             final int position = i+1;
-            gl.addView(mButton, i);
+            gl.addView(areaButton, i, params);
 
-            mButton.setOnClickListener(new View.OnClickListener() {
+            areaButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(
