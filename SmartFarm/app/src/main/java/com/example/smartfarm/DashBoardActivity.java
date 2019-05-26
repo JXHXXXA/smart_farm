@@ -291,6 +291,11 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         int height = dm.heightPixels;
         gl = (GridLayout) findViewById(R.id.dash_board_grid);
 
+        DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
+        float dp = 5f;
+        float fpixels = metrics.density * dp;
+        int pixels = (int) (fpixels + 0.5f);
+
         System.out.println("dm : " + dm.density);
         System.out.println("width : " + width);
         // areaButton.setId(Integer.parseInt("area_"+num));
@@ -299,16 +304,16 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         for (int i = 0; i < 32; i++) {
             mButton = new Button(this);
 //            areaButton.setId(@+id/area_bt);
-            mButton.setWidth((width - value*5)/4);
-            mButton.setHeight((width - value*5)/4);
+            mButton.setWidth((width - pixels*5)/4);
+            mButton.setHeight((width - pixels*5)/4);
             mButton.setText("센서 " + Integer.toString(i + 1)); //버튼에 들어갈 텍스트를 지정(String)
             mButton.getBackground().setColorFilter(Color.parseColor("#b5ddc0"), PorterDuff.Mode.DARKEN);
             params = new GridLayout.LayoutParams();
 
             if((i+1)%4!=0){
-                params.setMargins(0,0,value,value);
+                params.setMargins(0,0,pixels,pixels);
             } else {
-                params.setMargins(0,0,0,value);
+                params.setMargins(0,0,0,pixels);
             }
 
             mButton.setId(i);

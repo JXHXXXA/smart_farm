@@ -45,18 +45,23 @@ public class AreaActivity extends AppCompatActivity {
         // areaButton.setId(Integer.parseInt("area_"+num));
         // areaButton.setOnClickListener(mOnClick); //버튼에 OnClickListener를 지정(OnClickListener)
 
+        DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
+        float dp = 40f;
+        float fpixels = metrics.density * dp;
+        int pixels = (int) (fpixels + 0.5f);
+
         for (int i = 0; i < 8; i++) {
             areaButton = new Button(this);
-            areaButton.setWidth((width - value*3)/2);
-            areaButton.setHeight((width - value*3)/2);
+            areaButton.setWidth((width - pixels*3)/2);
+            areaButton.setHeight((width - pixels*3)/2);
             areaButton.setText(Integer.toString(i + 1) + "동");
             areaButton.setId(i);
 
             params = new GridLayout.LayoutParams();
             if(i%2==0){
-                params.setMargins(0,0,value,value*2);
+                params.setMargins(0,0,pixels/2,pixels);
             } else{
-                params.setMargins(value,0,0,value*2);
+                params.setMargins(pixels/2,0,0,pixels);
             }
 
             final int position = i+1;
