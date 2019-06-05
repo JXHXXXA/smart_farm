@@ -176,35 +176,31 @@
                                     <LinearLayout
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
-                                        android:orientation="vertical">
+                                        android:orientation="vertical"
+                                        android:paddingHorizontal="20dp" >
 
                                         <FrameLayout
                                             android:id="@+id/frame"
                                             android:layout_width="match_parent"
-                                            android:layout_height="500dp"
+                                            android:layout_height="1000dp"
                                             android:layout_gravity="center_horizontal" >
-                                            <SeekBar
-                                                android:id="@+id/view1"
+                                            <!-- ON/OFF -->
+                                            <ListView
+                                                android:id="@+id/onoff"
                                                 android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"
-                                                android:max="100"
-                                                android:thumb="@drawable/seekbar_color_thumb"
-                                                android:progressDrawable="@drawable/seekbar_color"/>
+                                                android:layout_height="wrap_content" />
 
-                                            <View
-                                                android:id="@+id/view2"
+                                            <!-- 임계치 -->
+                                            <ListView
+                                                android:id="@+id/threshold"
                                                 android:layout_width="match_parent"
-                                                android:layout_height="match_parent"
-                                                android:background="#460B00FF" />
+                                                android:layout_height="wrap_content" />
 
-                                            <View
-                                                android:id="@+id/view3"
+                                            <!-- 설정값 -->
+                                            <ListView
+                                                android:id="@+id/setting"
                                                 android:layout_width="match_parent"
-                                                android:layout_height="match_parent"
-                                                android:background="#F30000" />
-
-                                            <!--    <ToggleButton>     -->
-
+                                                android:layout_height="wrap_content"/>
                                         </FrameLayout>
                                     </LinearLayout>
                                 </ScrollView>

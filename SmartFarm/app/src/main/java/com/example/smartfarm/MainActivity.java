@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         farm1.setFarmTotalArea("총6동");
         farm1.setFarm_layout();
         farm_list.addView(farm1);
-
         farm1.setOnClickListener(new View.OnClickListener() {        // Image를 클릭한 경우
             public void onClick(View v) {
                 Intent intent = new Intent(

@@ -5,25 +5,24 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -52,21 +51,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import com.example.smartfarm.DemoBase;
-
 public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChangeListener {
     Button mButton;
     GridLayout gl;
     GridLayout.LayoutParams params;
     TextView time;
+    ListView onoffView;
+    ListView thresholdView;
+    ListView settingView;
 
     LineChart chart;
     private SeekBar seekBarX;
     private TextView tvX;
     ImageView imgView;
     SeekBar textView1;
-    View textView2;
-    View textView3;
     FrameLayout frame;
     Button button1;
     Button button2;
@@ -138,22 +136,78 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         getTime();
         chart();
         setButtonSeleted();
-
+        setOnOff();
+        setThreshold();
+        setSetting();
         /* 장치설정의 3가지 view */
-        textView1 = (SeekBar) findViewById(R.id.view1);
-        textView2 = (View) findViewById(R.id.view2);
-        textView3 = (View) findViewById(R.id.view3);
+        onoffView = (ListView) findViewById(R.id.onoff);
+        thresholdView = (ListView) findViewById(R.id.threshold);
+        settingView = (ListView) findViewById(R.id.setting);
 
         frame = (FrameLayout) findViewById(R.id.frame);
-        frame.removeView(textView2);
-        frame.removeView(textView3);
+        frame.removeView(thresholdView);
+        frame.removeView(settingView);
         button1.setSelected(true);
         button2.setSelected(false);
         button3.setSelected(false);
+    }
 
+
+
+    /* 이게 set이라기 보다는 onoff 화면을 띄어주는건데.. 여기에 클릭할 시 이벤트를 추가해야할 걱 같아용
+       일단은... 화면 만들어 뒀어요*/
+    private void setOnOff(){
+        int nDatCnt=0;
+        ArrayList<OnOffItemData> onoffData = new ArrayList<>();
+        for (int i=0; i<10; i++)
+        {
+            OnOffItemData onOffItem = new OnOffItemData();
+            onOffItem.setSensor = "센서 " + (i+1);
+            onoffData.add(onOffItem);
+        }
+
+        onoffView = (ListView)findViewById(R.id.onoff);
+        ListAdapter onOFFAdapter = new OnOffListAdapter(onoffData);
+        onoffView.setAdapter(onOFFAdapter);
+    }
+
+    private void setThreshold(){
+        int nDatCnt=0;
+        ArrayList<ThresholdItemData> thresholdData = new ArrayList<>();
+        for (int i=0; i<10; i++)
+        {
+            ThresholdItemData thresholdItem = new ThresholdItemData();
+            thresholdItem.sensorName = "센서 " + (i+1);
+            thresholdItem.maxValue = "1";
+            thresholdItem.minValue = "1";
+            thresholdData.add(thresholdItem);
+        }
+
+        thresholdView = (ListView)findViewById(R.id.threshold);
+        ListAdapter threshouldAdapter = new ThreshouldListAdapter(thresholdData);
+        thresholdView.setAdapter(threshouldAdapter);
 
     }
 
+    private void setSetting(){
+        int nDatCnt=0;
+        ArrayList<SettingItemData> settingData = new ArrayList<>();
+        for (int i=0; i<10; i++)
+        {
+            SettingItemData settingItem = new SettingItemData();
+            settingItem.sensorName = "센서 " + (i+1);
+            settingItem.editValue = "1";
+            settingData.add(settingItem);
+        }
+
+        settingView = (ListView)findViewById(R.id.setting);
+        ListAdapter settingAdapter = new SettingListAdapter(settingData);
+        settingView.setAdapter(settingAdapter);
+
+    }
+
+
+    /* 장치설정 전환 */
     private void setButtonSeleted() {
         button1 = (Button) findViewById(R.id.dash_board_onoff);
         button1.setOnClickListener(new Button.OnClickListener() {
@@ -196,13 +250,13 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         // index에 해당하는 textView 표시
         switch (index) {
             case 0:
-                frame.addView(textView1);
+                frame.addView(onoffView);
                 break;
             case 1:
-                frame.addView(textView2);
+                frame.addView(thresholdView);
                 break;
             case 2:
-                frame.addView(textView3);
+                frame.addView(settingView);
                 break;
         }
     }
@@ -303,16 +357,16 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         for (int i = 0; i < 32; i++) {
             mButton = new Button(this);
 //            areaButton.setId(@+id/area_bt);
-            mButton.setWidth((width - pixels*5)/4);
-            mButton.setHeight((width - pixels*5)/4);
+            mButton.setWidth((width - pixels * 5) / 4);
+            mButton.setHeight((width - pixels * 5) / 4);
             mButton.setText("센서 " + Integer.toString(i + 1)); //버튼에 들어갈 텍스트를 지정(String)
             mButton.getBackground().setColorFilter(Color.parseColor("#b5ddc0"), PorterDuff.Mode.DARKEN);
             params = new GridLayout.LayoutParams();
 
-            if((i+1)%4!=0){
-                params.setMargins(0,0,pixels,pixels);
+            if ((i + 1) % 4 != 0) {
+                params.setMargins(0, 0, pixels, pixels);
             } else {
-                params.setMargins(0,0,0,pixels);
+                params.setMargins(0, 0, 0, pixels);
             }
 
             mButton.setId(i);
