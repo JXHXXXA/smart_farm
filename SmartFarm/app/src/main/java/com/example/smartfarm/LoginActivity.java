@@ -42,16 +42,6 @@ public class LoginActivity extends AppCompatActivity {
         idText = (EditText) findViewById(R.id.login_id_input);
         pwText = (EditText) findViewById(R.id.login_pw_input);
 
-//        loginBtn.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View veiw) {
-//                Intent intent = new Intent(
-//                        getApplicationContext(),
-//                        MainActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-
         joinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,7 +62,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (id.isEmpty() || password.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "아이디와 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show();
                 } else {
-                    System.out.println("else");
                     Response.Listener<String> responseListener = new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -89,9 +78,9 @@ public class LoginActivity extends AppCompatActivity {
                                         editor.putBoolean("inputCheck", true);
                                         editor.commit();
                                     }
-//                                    int user_id = jsonResponse.getInt("user_id");
+                                    String user_id = id;
                                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                                    intent.putExtra("user_id", user_id);
+                                    intent.putExtra("user_id", user_id);
                                     startActivity(intent);
                                     finish();
                                 } else if (login_status.equals("0")) {
