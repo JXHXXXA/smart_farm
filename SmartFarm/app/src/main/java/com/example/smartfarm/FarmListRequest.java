@@ -1,24 +1,32 @@
 package com.example.smartfarm;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Response;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonRequest;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class FarmListRequest extends StringRequest {
+import java.io.UnsupportedEncodingException;
 
-    final static private String URL = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/farms";
-    private Map<String, String> parameters;
-
-    public FarmListRequest(String id, Response.Listener<String> listener){
-        super(Method.POST, URL, listener, null);
-        parameters = new HashMap<>();
-        parameters.put("user_id",id);
+public class FarmListRequest extends JsonRequest<JSONObject> {
+    public FarmListRequest(int method, String url, JSONObject jsonRequest,
+                           Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+        super(method, url, (jsonRequest == null) ? null : jsonRequest.toString(), listener,
+                errorListener);
     }
-
     @Override
-    public Map<String, String> getParams(){
-        return parameters;
+    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+        try {
+            String jsonString = new String(response.data, "UTF-8");
+            return Response.success(new JSONObject(jsonString),
+                    HttpHeaderParser.parseCacheHeaders(response));
+        } catch (UnsupportedEncodingException e) {
+            return Response.error(new ParseError(e));
+        } catch (JSONException je) {
+            return Response.error(new ParseError(je));
+        }
     }
 }

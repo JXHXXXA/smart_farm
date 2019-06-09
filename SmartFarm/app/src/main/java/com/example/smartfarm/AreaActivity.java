@@ -14,6 +14,7 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
@@ -59,18 +60,15 @@ public class AreaActivity extends AppCompatActivity {
         pixels = (int) (fpixels + 0.5f);
 
         setAreaList();
-        System.out.println("setAreaList end");
-
     }
 
     private void setAreaList(){
-        System.out.println("setAreaList start");
-        Response.Listener<String> responseListener = new Response.Listener<String>() {
+        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
+            public void onResponse(JSONObject response) {
                 try {
                     System.out.println("response : " + response);
-                    JSONObject jsonResponse = new JSONObject(response);
+                    JSONObject jsonResponse = response;
                     JSONArray farmList = jsonResponse.getJSONArray("data");
 
                     for(int i=0; i<farmList.length(); i++) {
@@ -111,7 +109,8 @@ public class AreaActivity extends AppCompatActivity {
                 }
             }
         };
-        AreaListRequest listRequest = new AreaListRequest(String.valueOf(farm_id), responseListener);
+        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/farms/"+farm_id+"/areas";
+        AreaListRequest listRequest = new AreaListRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(AreaActivity.this);
         queue.add(listRequest);
     }

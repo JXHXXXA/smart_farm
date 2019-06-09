@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
@@ -54,17 +55,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         farms = new ArrayList<>();
         setFarmList();
-        System.out.println("setFarmList end");
-
     }
     private void setFarmList(){
-        System.out.println("setFarmList start");
-        Response.Listener<String> responseListener = new Response.Listener<String>() {
+        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
+            public void onResponse(JSONObject response) {
                 try {
                     System.out.println("response : " + response);
-                    JSONObject jsonResponse = new JSONObject(response);
+                    JSONObject jsonResponse = response;
                     JSONArray farmList = jsonResponse.getJSONArray("data");
 
                     for(int i=0; i<farmList.length(); i++) {
@@ -85,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         farm.setFarm_layout();
                         farms.add(farm);
                         farm_list.addView(farm);
-                        System.out.println("farm.getId() : "+farm.getId());
                     }
                     for(int i=0; i<farmList.length(); i++) {
                         farms.get(i).setOnClickListener(MainActivity.this);
@@ -95,7 +92,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         };
-        FarmListRequest listRequest = new FarmListRequest(String.valueOf(user_id), responseListener);
+        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/users/"+user_id+"/farms";
+        FarmListRequest listRequest = new FarmListRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
         queue.add(listRequest);
     }
@@ -107,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             if(farm == targetFarm)
             {
-                System.out.println("onClick farm.getId() : "+farm.getId());
                 Intent intent = new Intent(getApplicationContext(), AreaActivity.class);
                 intent.putExtra("farm_id", Integer.toString(farm.getId()));
                 startActivity(intent);
