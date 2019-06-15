@@ -46,6 +46,8 @@ public class AreaActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = getIntent();
         farm_id = intent.getStringExtra("farm_id");
 
+        areaButtons = new ArrayList<>();
+
         backImg = (ImageView) findViewById(R.id.area_back);
         backImg.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

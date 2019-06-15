@@ -7,17 +7,14 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -33,20 +30,14 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,13 +45,12 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChangeListener {
+public class DashBoardActivity_ extends DemoBase implements SeekBar.OnSeekBarChangeListener {
     String area_id;
     TextView area_name;
     String sensor_id, value, time_stamp;
@@ -212,7 +202,7 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         };
         String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors";
         AreaListRequest listRequest = new AreaListRequest(Request.Method.GET, url, null, responseListener, null);
-        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity_.this);
         queue.add(listRequest);
     }
 
