@@ -392,8 +392,8 @@ public class DashBoardActivity extends DemoBase implements SeekBar.OnSeekBarChan
         time = (TextView) findViewById(R.id.dash_board_time);
         time.setText(DateUtils.formatDateTime(getBaseContext(), System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE));
 
-        tvX = findViewById(R.id.tvXMax);
-        seekBarX = findViewById(R.id.seekBar1);
+//        tvX = findViewById(R.id.tvXMax);
+//        seekBarX = findViewById(R.id.seekBar1);
         seekBarX.setOnSeekBarChangeListener(this);
 
         chart = findViewById(R.id.chart);

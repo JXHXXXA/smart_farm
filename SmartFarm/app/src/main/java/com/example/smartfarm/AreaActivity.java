@@ -86,7 +86,7 @@ public class AreaActivity extends AppCompatActivity implements View.OnClickListe
                         areaButton.setWidth((width - pixels*3)/2);
                         areaButton.setHeight((width - pixels*3)/2);
                         areaButton.setText(area_number+"동");
-                        areaButton.setId(i);
+                        areaButton.setId(Integer.parseInt(id));
                         areaButtons.add(areaButton);
 
                         params = new GridLayout.LayoutParams();
@@ -133,7 +133,7 @@ public class AreaActivity extends AppCompatActivity implements View.OnClickListe
         {
             if(areaButton == targetFarm)
             {
-                Intent intent = new Intent(getApplicationContext(), DashBoardActivity.class);
+                Intent intent = new Intent(getApplicationContext(), DashBoardActivity_.class);
                 intent.putExtra("area_id", Integer.toString(areaButton.getId()));
                 startActivity(intent);
             }

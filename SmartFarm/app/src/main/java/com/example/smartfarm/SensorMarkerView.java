@@ -18,17 +18,17 @@ import com.github.mikephil.charting.utils.Utils;
  * @author Philipp Jahoda
  */
 @SuppressLint("ViewConstructor")
-public class MyMarkerView extends MarkerView {
+public class SensorMarkerView extends MarkerView {
 
-    private final TextView tvContent;
+    private TextView tvContent;
 
-    public MyMarkerView(Context context, int layoutResource) {
+    public SensorMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
 
-        tvContent = findViewById(R.id.tvContent);
+        tvContent = (TextView)findViewById(R.id.tvContent);
     }
 
-    // runs every time the MarkerView is redrawn, can be used to update the
+    // callbacks everytime the MarkerView is redrawn, can be used to update the
     // content (user-interface)
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
@@ -37,10 +37,10 @@ public class MyMarkerView extends MarkerView {
 
             CandleEntry ce = (CandleEntry) e;
 
-            tvContent.setText(Utils.formatNumber(ce.getHigh(), 0, true));
+            tvContent.setText("" + Utils.formatNumber(ce.getHigh(), 0, true));
         } else {
 
-            tvContent.setText(Utils.formatNumber(e.getY(), 0, true));
+            tvContent.setText("" + Utils.formatNumber(e.getY(), 0, true));
         }
 
         super.refreshContent(e, highlight);
