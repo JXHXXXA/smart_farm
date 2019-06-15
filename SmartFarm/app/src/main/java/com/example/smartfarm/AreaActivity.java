@@ -23,10 +23,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class AreaActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class AreaActivity extends AppCompatActivity implements View.OnClickListener {
     String farm_id;
     String id, area_number, time_stamp;
     Button areaButton;
+    ArrayList<Button> areaButtons;
+
     GridLayout gl;
     ScrollView sv;
     ImageView backImg;
@@ -81,6 +85,7 @@ public class AreaActivity extends AppCompatActivity {
                         areaButton.setHeight((width - pixels*3)/2);
                         areaButton.setText(area_number+"동");
                         areaButton.setId(i);
+                        areaButtons.add(areaButton);
 
                         params = new GridLayout.LayoutParams();
                         if(i%2==0){
@@ -92,16 +97,20 @@ public class AreaActivity extends AppCompatActivity {
                         final int position = i+1;
                         gl.addView(areaButton, i, params);
 
-                        areaButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent(
-                                        getApplicationContext(), // 현재 화면의 제어권자
-                                        DashBoardActivity.class); // 다음 넘어갈 클래스 지정
-                                startActivity(intent); // 다음 화면으로 넘어간다
-                                System.out.println(position);
-                            }
-                        });
+//                        areaButton.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                Intent intent = new Intent(
+//                                        getApplicationContext(), // 현재 화면의 제어권자
+//                                        DashBoardActivity.class); // 다음 넘어갈 클래스 지정
+//                                startActivity(intent); // 다음 화면으로 넘어간다
+//                                System.out.println(position);
+//                            }
+//                        });
+                    }
+
+                    for(int i=0; i<farmList.length(); i++) {
+                        areaButtons.get(i).setOnClickListener(AreaActivity.this);
                     }
 
                 } catch (JSONException e) {
@@ -113,5 +122,19 @@ public class AreaActivity extends AppCompatActivity {
         AreaListRequest listRequest = new AreaListRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(AreaActivity.this);
         queue.add(listRequest);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Button targetFarm = (Button) v;
+        for(Button areaButton : areaButtons)
+        {
+            if(areaButton == targetFarm)
+            {
+                Intent intent = new Intent(getApplicationContext(), DashBoardActivity.class);
+                intent.putExtra("area_id", Integer.toString(areaButton.getId()));
+                startActivity(intent);
+            }
+        }
     }
 }
