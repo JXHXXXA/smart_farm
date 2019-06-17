@@ -178,13 +178,13 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         android:orientation="vertical"
-                                        android:paddingHorizontal="20dp" >
+                                        android:paddingHorizontal="20dp">
 
                                         <FrameLayout
                                             android:id="@+id/frame"
                                             android:layout_width="match_parent"
                                             android:layout_height="1000dp"
-                                            android:layout_gravity="center_horizontal" >
+                                            android:layout_gravity="center_horizontal">
                                             <!-- ON/OFF -->
                                             <ListView
                                                 android:id="@+id/onoff"
@@ -201,7 +201,7 @@
                                             <ListView
                                                 android:id="@+id/setting"
                                                 android:layout_width="match_parent"
-                                                android:layout_height="wrap_content"/>
+                                                android:layout_height="wrap_content" />
                                         </FrameLayout>
                                     </LinearLayout>
                                 </ScrollView>
@@ -232,12 +232,44 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:text="ERROR" />
+                        android:orientation="horizontal"
+                        android:layout_marginHorizontal="10dp"
+                        android:textAlignment="center">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/start_date"
+                            android:layout_weight="1"
+                            android:text="20202020"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="~"
+                            android:layout_weight="1"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/end_date"
+                            android:layout_weight="1"
+                            android:text="20202020"/>
+                        <Spinner
+                            android:id="@+id/spinner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:entries="@array/city"
+                            android:spinnerMode="dropdown">
+                        </Spinner>
+                        <Button
+                            android:layout_width="70dp"
+                            android:layout_height="wrap_content"
+                            android:text="검색"
+                            android:id="@+id/error_search"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
             </FrameLayout>

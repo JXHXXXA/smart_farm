@@ -2,6 +2,8 @@ package com.example.smartfarm;
 
 
 import android.Manifest;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -15,15 +17,20 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -52,6 +59,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -73,14 +81,21 @@ public class DashBoardActivity extends AppCompatActivity {
     ListView onoffView;
     ListView thresholdView;
     ListView settingView;
-
+    ListView errorView;
     private LineChart lineChart;
+    TextView start_date;
+    TextView end_date;
+    Date currentDate;
+    int iYear,iMonth,iDay;
+
 
     ImageView imgView;
     FrameLayout frame;
     Button button1;
     Button button2;
     Button button3;
+    Spinner spinner;
+    ArrayAdapter arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +175,7 @@ public class DashBoardActivity extends AppCompatActivity {
         });
 
 
+
         /* here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
         setSensorValueList();
         getTime();
@@ -168,18 +184,113 @@ public class DashBoardActivity extends AppCompatActivity {
         setOnOff();
         setThreshold();
         setSetting();
+        setSpinner();
+
+
         /* 장치설정의 3가지 view */
         onoffView = (ListView) findViewById(R.id.onoff);
         thresholdView = (ListView) findViewById(R.id.threshold);
         settingView = (ListView) findViewById(R.id.setting);
-
+/*        errorView = (ListView) findViewByld(R.id.error);*/
         frame = (FrameLayout) findViewById(R.id.frame);
         frame.removeView(thresholdView);
         frame.removeView(settingView);
         button1.setSelected(true);
         button2.setSelected(false);
         button3.setSelected(false);
+        start_date = (TextView) findViewById(R.id.start_date);
+        end_date = (TextView) findViewById(R.id.end_date);
+
+
+        final DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener(){
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                iYear = year;
+                iMonth = monthOfYear;
+                iDay = dayOfMonth;
+                updateEditText();
+            }
+        };
+
+        start_date.setOnClickListener(new TextView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String strDate = start_date.getText().toString();
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                try{
+                    Date pickDate = new Date(strDate);
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(pickDate);
+                    Dialog dia = null;
+                    //strDate값을 기본값으로 날짜 선택 다이얼로그 생성
+                    dia =new DatePickerDialog(getApplicationContext(), dateSetListener,cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH));
+                    dia.show();
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        getDateToday();
+
     }
+
+    protected void getDateToday(){
+        currentDate = new Date();
+        SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
+        SimpleDateFormat sdfMon = new SimpleDateFormat("MM");
+        SimpleDateFormat sdfDay = new SimpleDateFormat("dd");
+
+        start_date.setText(sdfYear.format(currentDate)+"/"+sdfMon.format(currentDate)+"/"+sdfDay.format(currentDate));
+        end_date.setText(sdfYear.format(currentDate)+"/"+sdfMon.format(currentDate)+"/"+sdfDay.format(currentDate));
+    }
+
+
+    protected void updateEditText(){
+        StringBuffer sb = new StringBuffer();
+        start_date.setText(sb.append(iYear+"/").append((iMonth+1) + "/").append(iDay)
+        );
+    }
+
+
+/*
+    public void onText3Clicked(View v) {
+
+        String strDate = start_date.getText().toString();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        try{
+            Date pickDate = new Date(strDate);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(pickDate);
+            Dialog dia = null;
+            //strDate값을 기본값으로 날짜 선택 다이얼로그 생성
+            dia =new DatePickerDialog(getApplicationContext(), dateSetListener,cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH));
+            dia.show();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }*/
+
+
+    private void setSpinner(){
+        arrayAdapter = arrayAdapter.createFromResource(getApplicationContext(),R.array.city,R.layout.spinner_color);
+        arrayAdapter.setDropDownViewResource(R.layout.spinner_color);
+        spinner = (Spinner)findViewById(R.id.spinner);
+        spinner.setAdapter(arrayAdapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(getApplicationContext(), adapterView.getSelectedItem().toString()+"(이)가 선택되었습니다.",
+                        Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+    }
+
 
     private void setSensorValueList(){
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
@@ -377,7 +488,7 @@ public class DashBoardActivity extends AppCompatActivity {
         ArrayList<Entry> entries = new ArrayList<>();
 
         Date now = new Date();
-        SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
         System.out.println(timeStampFormat.format(now));
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println(dateTimeFormat.format(now));
