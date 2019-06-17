@@ -133,7 +133,7 @@ public class AreaActivity extends AppCompatActivity implements View.OnClickListe
         {
             if(areaButton == targetFarm)
             {
-                Intent intent = new Intent(getApplicationContext(), DashBoardActivity_.class);
+                Intent intent = new Intent(getApplicationContext(), DashBoardActivity.class);
                 intent.putExtra("area_id", Integer.toString(areaButton.getId()));
                 startActivity(intent);
             }
