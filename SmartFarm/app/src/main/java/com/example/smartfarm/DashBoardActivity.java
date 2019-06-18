@@ -88,6 +88,7 @@ public class DashBoardActivity extends AppCompatActivity {
     Button button1;
     Button button2;
     Button button3;
+    Button startDate, endDate, error_search;
     Spinner spinner;
     ArrayAdapter arrayAdapter;
 
@@ -192,64 +193,36 @@ public class DashBoardActivity extends AppCompatActivity {
         button1.setSelected(true);
         button2.setSelected(false);
         button3.setSelected(false);
-        start_date = (TextView) findViewById(R.id.start_date);
-        end_date = (TextView) findViewById(R.id.end_date);
+        startDate = (Button) findViewById(R.id.start_date);
+        endDate = (Button) findViewById(R.id.end_date);
+        error_search = (Button) findViewById(R.id.error_search);
 
 
-        final DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener(){
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                iYear = year;
-                iMonth = monthOfYear;
-                iDay = dayOfMonth;
-                updateEditText();
-            }
-        };
-
-        start_date.setOnClickListener(new TextView.OnClickListener() {
+        /* 에러 날짜 */
+        Date today = new Date();      // birthday 버튼의 초기화를 위해 date 객체와 SimpleDataFormat 사용
+        SimpleDateFormat dateFormat = new SimpleDateFormat(" yyyy/MM/dd");
+        String result = dateFormat.format(today);
+        startDate.setText(result);       // 오늘 날짜로 birthday 버튼 텍스트 초기화
+        endDate.setText(result);
+        error_search.setOnClickListener(new View.OnClickListener() {        // 저장 버튼을 클릭하면 토스트로 고객 정보를 띄워주기
             @Override
             public void onClick(View v) {
-                String strDate = start_date.getText().toString();
-
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-                try{
-                    Date pickDate = new Date(strDate);
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(pickDate);
-                    Dialog dia = null;
-                    //strDate값을 기본값으로 날짜 선택 다이얼로그 생성
-                    dia =new DatePickerDialog(getApplicationContext(), dateSetListener,cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH));
-                    dia.show();
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
+                Toast.makeText(getApplicationContext(), startDate.getText().toString() + "\n" + endDate.getText().toString(), Toast.LENGTH_LONG).show();
             }
         });
-        getDateToday();
-
         // 통계 서버연동
         getSensorValue(13, "20190609", "humidity");
-
     }
 
-    protected void getDateToday(){
-        currentDate = new Date();
-        SimpleDateFormat sdfYear = new SimpleDateFormat("yyyy");
-        SimpleDateFormat sdfMon = new SimpleDateFormat("MM");
-        SimpleDateFormat sdfDay = new SimpleDateFormat("dd");
-
-        start_date.setText(sdfYear.format(currentDate)+"/"+sdfMon.format(currentDate)+"/"+sdfDay.format(currentDate));
-        end_date.setText(sdfYear.format(currentDate)+"/"+sdfMon.format(currentDate)+"/"+sdfDay.format(currentDate));
+    public void onStartDateClicked(View v) {
+        android.support.v4.app.DialogFragment newFragment = new DatePickerFragment(0);   //DatePickerFragment 객체 생성
+        newFragment.show(getSupportFragmentManager(), "datePicker");                //프래그먼트 매니저를 이용하여 프래그먼트 보여주기
     }
 
-
-    protected void updateEditText(){
-        StringBuffer sb = new StringBuffer();
-        start_date.setText(sb.append(iYear+"/").append((iMonth+1) + "/").append(iDay)
-        );
+    public void onEndDateClicked(View v) {
+        android.support.v4.app.DialogFragment newFragment = new DatePickerFragment(1);   //DatePickerFragment 객체 생성
+        newFragment.show(getSupportFragmentManager(), "datePicker");                //프래그먼트 매니저를 이용하여 프래그먼트 보여주기
     }
-
-
 /*
     public void onText3Clicked(View v) {
 
