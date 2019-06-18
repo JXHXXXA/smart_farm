@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -180,7 +182,7 @@ public class DashBoardActivity extends AppCompatActivity {
         setThreshold();
         setSetting();
         setSpinner();
-
+        setError();
 
         /* 장치설정의 3가지 view */
         onoffView = (ListView) findViewById(R.id.onoff);
@@ -196,7 +198,7 @@ public class DashBoardActivity extends AppCompatActivity {
         startDate = (Button) findViewById(R.id.start_date);
         endDate = (Button) findViewById(R.id.end_date);
         error_search = (Button) findViewById(R.id.error_search);
-
+        errorView = (ListView) findViewById(R.id.error_table);
 
         /* 에러 날짜 */
         Date today = new Date();      // birthday 버튼의 초기화를 위해 date 객체와 SimpleDataFormat 사용
@@ -214,7 +216,7 @@ public class DashBoardActivity extends AppCompatActivity {
         getSensorValue(13, "20190609", "humidity");
     }
 
-    public void onStartDateClicked(View v) {
+   public void onStartDateClicked(View v) {
         android.support.v4.app.DialogFragment newFragment = new DatePickerFragment(0);   //DatePickerFragment 객체 생성
         newFragment.show(getSupportFragmentManager(), "datePicker");                //프래그먼트 매니저를 이용하여 프래그먼트 보여주기
     }
@@ -242,6 +244,47 @@ public class DashBoardActivity extends AppCompatActivity {
         }
     }*/
 
+    private void setError(){
+        int nDatCnt=0;
+        ArrayList<ErrorItemData> errorData = new ArrayList<>();
+        for (int i=0; i<10; i++)
+        {
+            ErrorItemData errorItem = new ErrorItemData();
+            errorItem.sensor_name = "센서 " + (i+1);
+            errorItem.type = "우엥";
+            errorItem.occur_date = "2020/20/20";
+            errorItem.recover_date = "2020/20/20";
+            errorData.add(errorItem);
+        }
+
+        errorView = (ListView)findViewById(R.id.error_table);
+        ListAdapter errorAdapter = new ErrorItemListAdapter(errorData);
+        errorView.setAdapter(errorAdapter);
+        /* 잘리는거맞추깅 */
+        setListViewHeightBasedOnChildren(errorView);
+    }
+
+    public void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+        int totalHeight = 0;
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.AT_MOST);
+
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            listItem.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }
 
     private void setSpinner(){
         arrayAdapter = arrayAdapter.createFromResource(getApplicationContext(),R.array.city,R.layout.spinner_color);
@@ -546,7 +589,7 @@ public class DashBoardActivity extends AppCompatActivity {
 //            areaButton.setId(@+id/area_bt);
         mButton.setWidth((width - pixels * 5) / 4);
         mButton.setHeight((width - pixels * 5) / 4);
-        mButton.setText("센서 " + Integer.toString(i + 1)); //버튼에 들어갈 텍스트를 지정(String)
+        mButton.setText("센서 " + Integer.toString(i + 1) +"\n" + "온도 : 23'C" + "습도 : 50%"); //버튼에 들어갈 텍스트를 지정(String)
         mButton.getBackground().setColorFilter(Color.parseColor("#b5ddc0"), PorterDuff.Mode.DARKEN);
         params = new GridLayout.LayoutParams();
 
