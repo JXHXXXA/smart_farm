@@ -1,21 +1,15 @@
 package com.example.smartfarm;
 
 
-import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,7 +20,6 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -38,30 +31,27 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.EntryXComparator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -70,9 +60,13 @@ public class DashBoardActivity extends AppCompatActivity {
     TextView area_name;
     String sensor_id, value, time_stamp;
 
+    ArrayList<Entry> sensor_entry;
+
     ImageView backImg;
 
     float[] sensor_values;
+
+    long reference_timestamp;
 
     Button mButton;
     GridLayout gl;
@@ -109,7 +103,7 @@ public class DashBoardActivity extends AppCompatActivity {
         sensor_values = new float[23];
 
         area_name = (TextView) findViewById(R.id.area_name);
-        area_name.setText("코끼리 하마 농장 "+ (Integer.parseInt(area_id)+1) +"동");
+        area_name.setText("코끼리 하마 농장 "+ area_id +"동");
 
         backImg = (ImageView) findViewById(R.id.dash_board_back);
         backImg.setOnClickListener(new View.OnClickListener() {
@@ -174,12 +168,12 @@ public class DashBoardActivity extends AppCompatActivity {
             }
         });
 
-
+        sensor_entry = new ArrayList<>();
 
         /* here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
         setSensorValueList();
         getTime();
-        chart();
+
         setButtonSeleted();
         setOnOff();
         setThreshold();
@@ -232,6 +226,9 @@ public class DashBoardActivity extends AppCompatActivity {
             }
         });
         getDateToday();
+
+        // 통계 서버연동
+        getSensorValue(13, "20190609", "humidity");
 
     }
 
@@ -322,34 +319,123 @@ public class DashBoardActivity extends AppCompatActivity {
         queue.add(listRequest);
     }
 
-    private void getSensorValue(){
+    private void getSensorValue(int sensorId, String searchDate, String sensorName){
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     System.out.println("response : " + response);
                     JSONObject jsonResponse = response;
-                    JSONArray farmList = jsonResponse.getJSONArray("data");
+                    JSONArray sensorValueList = jsonResponse.getJSONArray("data");
 
-                    for(int i=0; i<farmList.length(); i++) {
-                        sensor_id = farmList.getJSONObject(i).getString("sensor_id");
-                        value = farmList.getJSONObject(i).getString("value");
-                        time_stamp = farmList.getJSONObject(i).getString("time_stamp");
+                    reference_timestamp = 0;
+                    for(int i=0; i<sensorValueList.length(); i++) {
+                        String strTime = sensorValueList.getJSONObject(i).getString("time_stamp");
+                        SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                        getSensorValue(i, Float.parseFloat(value));
-                        sensor_values[Integer.parseInt(sensor_id)-1] = Float.parseFloat(value);
-                        System.out.println("sensor_id : " + (Integer.parseInt(sensor_id)) + " , value : " + sensor_values[Integer.parseInt(sensor_id)-1]);
+                        Date timeStamp = timeStampFormat.parse(strTime);
+                        String dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeStamp);
+                        timeStamp = dateTimeFormat.parse(dateTime);
+
+                        if(i==0){
+                            reference_timestamp = timeStamp.getTime();
+                        }
+
+                        sensor_entry.add(new Entry(
+                                timeStamp.getTime() - reference_timestamp,
+                                Float.parseFloat(sensorValueList.getJSONObject(i).getString("value"))
+                                )
+                        );
+
+                        System.out.println("data : " + sensor_entry.get(i));
+                        System.out.println("datetime : " + timeStamp.getTime());
+                        System.out.println("value : " + Float.parseFloat(sensorValueList.getJSONObject(i).getString("value")));
                     }
-
+                    chart();
                 } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
         };
-        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors";
-        AreaListRequest listRequest = new AreaListRequest(Request.Method.GET, url, null, responseListener, null);
+        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors/"+sensorId+"/"+searchDate+"?sensorName="+sensorName;
+        SensorValueRequest sensorValueRequest = new SensorValueRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
-        queue.add(listRequest);
+        queue.add(sensorValueRequest);
+    }
+
+    private void chart() {
+        lineChart = (LineChart)findViewById(R.id.chart);
+        lineChart.invalidate();
+        lineChart.clear();
+
+        ArrayList<Entry> entries = new ArrayList<>();
+
+        entries.add(new Entry(1, 0));
+        entries.add(new Entry(2, 2));
+        entries.add(new Entry(3, 0));
+        entries.add(new Entry(4, 4));
+        entries.add(new Entry(5, 3));
+
+//        for(int i=0; i<sensor_entry.size(); i++){
+//            System.out.println(sensor_entry.get(i));
+//        }
+
+        //Collections.sort(sensor_entry, new EntryXComparator());
+        LineDataSet lineDataSet = new LineDataSet(sensor_entry, "측정값");
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setCircleRadius(6);
+        lineDataSet.setCircleColor(Color.parseColor("#FF0ed60a"));
+        lineDataSet.setCircleHoleColor(Color.BLUE);
+        lineDataSet.setColor(Color.parseColor("#FF0ed60a"));
+        lineDataSet.setDrawCircleHole(true);
+        lineDataSet.setDrawCircles(true);
+        lineDataSet.setDrawHorizontalHighlightIndicator(false);
+        lineDataSet.setDrawHighlightIndicators(false);
+        lineDataSet.setDrawValues(false);
+
+        LineData lineData = new LineData();
+        lineData.addDataSet(lineDataSet);
+
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(Color.BLACK);
+        xAxis.enableGridDashedLine(8, 24, 0);
+        xAxis.setValueFormatter(new ValueFormatter() {
+
+            private final SimpleDateFormat mFormat = new SimpleDateFormat("dd MMM HH:mm", Locale.ENGLISH);
+
+            @Override
+            public String getFormattedValue(float value) {
+
+                long millis = TimeUnit.HOURS.toMillis((long) value);
+                return mFormat.format(new Date(millis));
+            }
+        });
+
+        YAxis yLAxis = lineChart.getAxisLeft();
+        yLAxis.setTextColor(Color.BLACK);
+
+        YAxis yRAxis = lineChart.getAxisRight();
+        yRAxis.setDrawLabels(false);
+        yRAxis.setDrawAxisLine(false);
+        yRAxis.setDrawGridLines(false);
+
+        Description description = new Description();
+        description.setText("");
+
+        SensorMarkerView marker = new SensorMarkerView(this,R.layout.custom_marker_view);
+        marker.setChartView(lineChart);
+        lineChart.setMarker(marker);
+
+        lineChart.setDoubleTapToZoomEnabled(false);
+        lineChart.setDrawGridBackground(false);
+        lineChart.setDescription(description);
+        lineChart.animateY(2000, Easing.EaseInCubic);
+
+        lineChart.setData(lineData);
     }
 
     /* 이게 set이라기 보다는 onoff 화면을 띄어주는건데.. 여기에 클릭할 시 이벤트를 추가해야할 걱 같아용
@@ -460,89 +546,6 @@ public class DashBoardActivity extends AppCompatActivity {
     }
 
 
-    private void chart() {
-        lineChart = (LineChart)findViewById(R.id.chart);
-        lineChart.invalidate();
-        lineChart.clear();
-
-        /*
-        -------------------------------------------------------------------------------------------------------------
-        -------------------------------------------------------------------------------------------------------------
-        -------------------------------------------------------------------------------------------------------------
-        -------------------------------------------------------------------------------------------------------------
-        */
-//        ArrayList<Entry> values = new ArrayList<>();//차트 데이터 셋에 담겨질 데이터
-
-//        for (Record record : records) { //values에 데이터를 담는 과정
-//            long dateTime = record.getDateTime();
-//            float weight = (float) record.getWeight();
-//            values.add(new Entry(dateTime, weight));
-//        }
-
-        /*
-        -------------------------------------------------------------------------------------------------------------
-        -------------------------------------------------------------------------------------------------------------
-        -------------------------------------------------------------------------------------------------------------
-        */
-
-        ArrayList<Entry> entries = new ArrayList<>();
-
-        Date now = new Date();
-        SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
-        System.out.println(timeStampFormat.format(now));
-        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        System.out.println(dateTimeFormat.format(now));
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-        System.out.println(timeFormat.format(now));
-
-        entries.add(new Entry(1, 0));
-        entries.add(new Entry(2, 2));
-        entries.add(new Entry(3, 0));
-        entries.add(new Entry(4, 4));
-        entries.add(new Entry(5, 3));
-
-        LineDataSet lineDataSet = new LineDataSet(entries, "측정값");
-        lineDataSet.setLineWidth(2);
-        lineDataSet.setCircleRadius(6);
-        lineDataSet.setCircleColor(Color.parseColor("#FF0ed60a"));
-        lineDataSet.setCircleHoleColor(Color.BLUE);
-        lineDataSet.setColor(Color.parseColor("#FF0ed60a"));
-        lineDataSet.setDrawCircleHole(true);
-        lineDataSet.setDrawCircles(true);
-        lineDataSet.setDrawHorizontalHighlightIndicator(false);
-        lineDataSet.setDrawHighlightIndicators(false);
-        lineDataSet.setDrawValues(false);
-
-        LineData lineData = new LineData(lineDataSet);
-        lineChart.setData(lineData);
-
-        XAxis xAxis = lineChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setTextColor(Color.BLACK);
-        xAxis.enableGridDashedLine(8, 24, 0);
-
-        YAxis yLAxis = lineChart.getAxisLeft();
-        yLAxis.setTextColor(Color.BLACK);
-
-        YAxis yRAxis = lineChart.getAxisRight();
-        yRAxis.setDrawLabels(false);
-        yRAxis.setDrawAxisLine(false);
-        yRAxis.setDrawGridLines(false);
-
-        Description description = new Description();
-        description.setText("");
-
-        SensorMarkerView marker = new SensorMarkerView(this,R.layout.custom_marker_view);
-        marker.setChartView(lineChart);
-        lineChart.setMarker(marker);
-
-        lineChart.setDoubleTapToZoomEnabled(false);
-        lineChart.setDrawGridBackground(false);
-        lineChart.setDescription(description);
-        lineChart.animateY(2000, Easing.EaseInCubic);
-        lineChart.invalidate();
-    }
-
     private void getTime() {
         /* 일단 현재 시간 받아오는거로..*/
         time = (TextView) findViewById(R.id.dash_board_time);
@@ -588,5 +591,14 @@ public class DashBoardActivity extends AppCompatActivity {
     }
 
     private void setData(int count, float range) {
+    }
+
+    private class HourAxisValueFormatter implements IAxisValueFormatter {
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            Date valueDate = (new Date((long) value));
+            return dateTimeFormat.format(valueDate);
+        }
     }
 }
