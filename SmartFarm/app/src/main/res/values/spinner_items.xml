@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="city">
-        <item >서울</item>
-        <item >경기</item>
-        <item >부천</item>
-        <item >수원</item>
-        <item >파주</item>
-        <item >부산</item>
-        <item >대전</item>
+    <string-array name="sensor">
+        <item >실내온도1</item>
+        <item >실내온도2</item>
+        <item >실내온도3</item>
+        <item >실내온도4</item>
+        <item >온수온도</item>
+        <item >이산화탄소1</item>
+        <item >이산화탄소2</item>
+        <item >이산화탄소3</item>
+        <item >이산화탄소4</item>
+        <item >습도1</item>
+        <item >습도2</item>
+        <item >습도3</item>
+        <item >습도4</item>
+        <item >배지습도1</item>
+        <item >배지습도2</item>
+        <item >배지습도3</item>
+        <item >조명</item>
+        <item >전자저울1</item>
+        <item >전자저울2</item>
+        <item >전자저울3</item>
     </string-array>
 </resources>

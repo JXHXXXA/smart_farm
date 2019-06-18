@@ -1,8 +1,6 @@
 package com.example.smartfarm;
 
 
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -10,13 +8,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -33,14 +29,12 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.Volley;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.EntryXComparator;
 
@@ -51,7 +45,6 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
@@ -79,17 +72,15 @@ public class DashBoardActivity extends AppCompatActivity {
     ListView settingView;
     ListView errorView;
     private LineChart lineChart;
-    TextView start_date;
-    TextView end_date;
-    Date currentDate;
-    int iYear,iMonth,iDay;
-
 
     ImageView imgView;
     FrameLayout frame;
     Button button1;
     Button button2;
     Button button3;
+
+    Button statisticsStartDate, statisticsEndDate, statisticsSearch;
+
     Button startDate, endDate, error_search;
     Spinner spinner;
     ArrayAdapter arrayAdapter;
@@ -178,9 +169,13 @@ public class DashBoardActivity extends AppCompatActivity {
         getTime();
 
         setButtonSeleted();
-        setOnOff();
-        setThreshold();
-        setSetting();
+
+        getOnOffSettings();
+
+//        getThresholdSettings();
+
+//        getValueSettings();
+
         setSpinner();
         setError();
 
@@ -195,25 +190,41 @@ public class DashBoardActivity extends AppCompatActivity {
         button1.setSelected(true);
         button2.setSelected(false);
         button3.setSelected(false);
+
+        Date today = new Date();      // birthday 버튼의 초기화를 위해 date 객체와 SimpleDataFormat 사용
+        SimpleDateFormat dateFormat = new SimpleDateFormat(" yyyy/MM/dd");
+        String result = dateFormat.format(today);
+
+        statisticsStartDate = (Button) findViewById(R.id.statistics_start_date);
+        statisticsEndDate = (Button) findViewById(R.id.statistics_end_date);
+        statisticsSearch = (Button) findViewById(R.id.statistics_search);
+
+        statisticsStartDate.setText(result);
+        statisticsEndDate.setText(result);
+        statisticsSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), statisticsStartDate.getText().toString() + "\n" + statisticsEndDate.getText().toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+
         startDate = (Button) findViewById(R.id.start_date);
         endDate = (Button) findViewById(R.id.end_date);
         error_search = (Button) findViewById(R.id.error_search);
         errorView = (ListView) findViewById(R.id.error_table);
 
         /* 에러 날짜 */
-        Date today = new Date();      // birthday 버튼의 초기화를 위해 date 객체와 SimpleDataFormat 사용
-        SimpleDateFormat dateFormat = new SimpleDateFormat(" yyyy/MM/dd");
-        String result = dateFormat.format(today);
-        startDate.setText(result);       // 오늘 날짜로 birthday 버튼 텍스트 초기화
+        startDate.setText(result);
         endDate.setText(result);
-        error_search.setOnClickListener(new View.OnClickListener() {        // 저장 버튼을 클릭하면 토스트로 고객 정보를 띄워주기
+        error_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), startDate.getText().toString() + "\n" + endDate.getText().toString(), Toast.LENGTH_LONG).show();
             }
         });
+
         // 통계 서버연동
-        getSensorValue(13, "20190609", "humidity");
+        getSensorValue(5, "20190619", "indoor_temperature");
     }
 
    public void onStartDateClicked(View v) {
@@ -225,24 +236,6 @@ public class DashBoardActivity extends AppCompatActivity {
         android.support.v4.app.DialogFragment newFragment = new DatePickerFragment(1);   //DatePickerFragment 객체 생성
         newFragment.show(getSupportFragmentManager(), "datePicker");                //프래그먼트 매니저를 이용하여 프래그먼트 보여주기
     }
-/*
-    public void onText3Clicked(View v) {
-
-        String strDate = start_date.getText().toString();
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        try{
-            Date pickDate = new Date(strDate);
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(pickDate);
-            Dialog dia = null;
-            //strDate값을 기본값으로 날짜 선택 다이얼로그 생성
-            dia =new DatePickerDialog(getApplicationContext(), dateSetListener,cal.get(Calendar.YEAR),cal.get(Calendar.MONTH),cal.get(Calendar.DAY_OF_MONTH));
-            dia.show();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }*/
 
     private void setError(){
         int nDatCnt=0;
@@ -250,10 +243,10 @@ public class DashBoardActivity extends AppCompatActivity {
         for (int i=0; i<10; i++)
         {
             ErrorItemData errorItem = new ErrorItemData();
-            errorItem.sensor_name = "센서 " + (i+1);
-            errorItem.type = "우엥";
-            errorItem.occur_date = "2020/20/20";
-            errorItem.recover_date = "2020/20/20";
+            errorItem.sensor_name = "실내온도2";
+            errorItem.type = "임계치 초과";
+            errorItem.occur_date = "2019/06/15";
+            errorItem.recover_date = "2019/06/18";
             errorData.add(errorItem);
         }
 
@@ -261,7 +254,7 @@ public class DashBoardActivity extends AppCompatActivity {
         ListAdapter errorAdapter = new ErrorItemListAdapter(errorData);
         errorView.setAdapter(errorAdapter);
         /* 잘리는거맞추깅 */
-        setListViewHeightBasedOnChildren(errorView);
+//        setListViewHeightBasedOnChildren(errorView);
     }
 
     public void setListViewHeightBasedOnChildren(ListView listView) {
@@ -287,7 +280,7 @@ public class DashBoardActivity extends AppCompatActivity {
     }
 
     private void setSpinner(){
-        arrayAdapter = arrayAdapter.createFromResource(getApplicationContext(),R.array.city,R.layout.spinner_color);
+        arrayAdapter = arrayAdapter.createFromResource(getApplicationContext(),R.array.sensor,R.layout.spinner_color);
         arrayAdapter.setDropDownViewResource(R.layout.spinner_color);
         spinner = (Spinner)findViewById(R.id.spinner);
         spinner.setAdapter(arrayAdapter);
@@ -319,9 +312,49 @@ public class DashBoardActivity extends AppCompatActivity {
                         value = farmList.getJSONObject(i).getString("value");
                         time_stamp = farmList.getJSONObject(i).getString("time_stamp");
 
-                        getSensorValue(i, Float.parseFloat(value));
+                        if(sensor_id.equals(""+SensorType.INDOOR_TEMP_1))
+                            getSensorValue(i, "실내온도1", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.INDOOR_TEMP_2))
+                            getSensorValue(i, "실내온도2", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.INDOOR_TEMP_3))
+                            getSensorValue(i, "실내온도3", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.INDOOR_TEMP_4))
+                            getSensorValue(i, "실내온도4", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.WATER_TEMP))
+                            getSensorValue(i, "온수온도", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.CO2_1))
+                            getSensorValue(i, "이산화탄소1", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.CO2_2))
+                            getSensorValue(i, "이산화탄소2", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.CO2_3))
+                            getSensorValue(i, "이산화탄소3", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.CO2_4))
+                            getSensorValue(i, "이산화탄소4", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.HUMIDITY_1))
+                            getSensorValue(i, "습도1", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.HUMIDITY_2))
+                            getSensorValue(i, "습도2", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.HUMIDITY_3))
+                            getSensorValue(i, "습도3", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.HUMIDITY_4))
+                            getSensorValue(i, "습도4", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.GROWTH_MEDIUM_1))
+                            getSensorValue(i, "배지습도1", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.GROWTH_MEDIUM_2))
+                            getSensorValue(i, "배지습도2", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.GROWTH_MEDIUM_3))
+                            getSensorValue(i, "배지습도3", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.ILLUMINANCE))
+                            getSensorValue(i, "조명", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.SCALE_1))
+                            getSensorValue(i, "전자저울1", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.SCALE_2))
+                            getSensorValue(i, "전자저울2", Float.parseFloat(value));
+                        else if(sensor_id.equals(""+SensorType.SCALE_3))
+                            getSensorValue(i, "전자저울3", Float.parseFloat(value));
+
                         sensor_values[Integer.parseInt(sensor_id)-1] = Float.parseFloat(value);
-                        System.out.println("sensor_id : " + (Integer.parseInt(sensor_id)) + " , value : " + sensor_values[Integer.parseInt(sensor_id)-1]);
+//                        System.out.println("sensor_id : " + (Integer.parseInt(sensor_id)) + " , value : " + sensor_values[Integer.parseInt(sensor_id)-1]);
                     }
 
                 } catch (JSONException e) {
@@ -330,9 +363,9 @@ public class DashBoardActivity extends AppCompatActivity {
             }
         };
         String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors";
-        AreaListRequest listRequest = new AreaListRequest(Request.Method.GET, url, null, responseListener, null);
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
-        queue.add(listRequest);
+        queue.add(commonGetHttpRequest);
     }
 
     private void getSensorValue(int sensorId, String searchDate, String sensorName){
@@ -345,28 +378,30 @@ public class DashBoardActivity extends AppCompatActivity {
                     JSONArray sensorValueList = jsonResponse.getJSONArray("data");
 
                     reference_timestamp = 0;
-                    for(int i=0; i<sensorValueList.length(); i++) {
-                        String strTime = sensorValueList.getJSONObject(i).getString("time_stamp");
-                        SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String strTime;
+                    Date timeStamp;
+                    SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//                        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                        Date timeStamp = timeStampFormat.parse(strTime);
-                        String dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeStamp);
-                        timeStamp = dateTimeFormat.parse(dateTime);
+                    for(int i=0; i<sensorValueList.length(); i++) {
+                        strTime = sensorValueList.getJSONObject(i).getString("time_stamp");
+                        timeStamp = timeStampFormat.parse(strTime);
+//                        String dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(timeStamp);
+//                        timeStamp = dateTimeFormat.parse(dateTime);
 
                         if(i==0){
                             reference_timestamp = timeStamp.getTime();
                         }
 
                         sensor_entry.add(new Entry(
-                                timeStamp.getTime() - reference_timestamp,
+                                timeStamp.getTime()-reference_timestamp,
                                 Float.parseFloat(sensorValueList.getJSONObject(i).getString("value"))
                                 )
                         );
-
-                        System.out.println("data : " + sensor_entry.get(i));
-                        System.out.println("datetime : " + timeStamp.getTime());
-                        System.out.println("value : " + Float.parseFloat(sensorValueList.getJSONObject(i).getString("value")));
+//                        System.out.println("timeStamp.getTime() : " + timeStamp.getTime());
+//                        System.out.println("timeStamp : " + timeStamp);
+//                        System.out.println("datetime : " + timeStamp.getTime());
+//                        System.out.println("value : " + Float.parseFloat(sensorValueList.getJSONObject(i).getString("value")));
                     }
                     chart();
                 } catch (JSONException e) {
@@ -377,29 +412,21 @@ public class DashBoardActivity extends AppCompatActivity {
             }
         };
         String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors/"+sensorId+"/"+searchDate+"?sensorName="+sensorName;
-        SensorValueRequest sensorValueRequest = new SensorValueRequest(Request.Method.GET, url, null, responseListener, null);
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
-        queue.add(sensorValueRequest);
+        queue.add(commonGetHttpRequest);
     }
 
     private void chart() {
         lineChart = (LineChart)findViewById(R.id.chart);
         lineChart.invalidate();
         lineChart.clear();
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(true);
+        lineChart.setDrawGridBackground(false);
+        lineChart.setHighlightPerDragEnabled(true);
 
-        ArrayList<Entry> entries = new ArrayList<>();
-
-        entries.add(new Entry(1, 0));
-        entries.add(new Entry(2, 2));
-        entries.add(new Entry(3, 0));
-        entries.add(new Entry(4, 4));
-        entries.add(new Entry(5, 3));
-
-//        for(int i=0; i<sensor_entry.size(); i++){
-//            System.out.println(sensor_entry.get(i));
-//        }
-
-        //Collections.sort(sensor_entry, new EntryXComparator());
+        Collections.sort(sensor_entry, new EntryXComparator());
         LineDataSet lineDataSet = new LineDataSet(sensor_entry, "측정값");
         lineDataSet.setLineWidth(2);
         lineDataSet.setCircleRadius(6);
@@ -418,22 +445,19 @@ public class DashBoardActivity extends AppCompatActivity {
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextColor(Color.BLACK);
-        xAxis.enableGridDashedLine(8, 24, 0);
+//        xAxis.enableGridDashedLine(8, 24, 0);
         xAxis.setValueFormatter(new ValueFormatter() {
-
-            private final SimpleDateFormat mFormat = new SimpleDateFormat("dd MMM HH:mm", Locale.ENGLISH);
+            private final SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm:ss");
 
             @Override
             public String getFormattedValue(float value) {
-
-                long millis = TimeUnit.HOURS.toMillis((long) value);
+                long millis = TimeUnit.MILLISECONDS.toMillis((long) value+reference_timestamp);
                 return mFormat.format(new Date(millis));
             }
         });
 
         YAxis yLAxis = lineChart.getAxisLeft();
         yLAxis.setTextColor(Color.BLACK);
-
         YAxis yRAxis = lineChart.getAxisRight();
         yRAxis.setDrawLabels(false);
         yRAxis.setDrawAxisLine(false);
@@ -453,59 +477,6 @@ public class DashBoardActivity extends AppCompatActivity {
 
         lineChart.setData(lineData);
     }
-
-    /* 이게 set이라기 보다는 onoff 화면을 띄어주는건데.. 여기에 클릭할 시 이벤트를 추가해야할 걱 같아용
-       일단은... 화면 만들어 뒀어요*/
-    private void setOnOff(){
-        int nDatCnt=0;
-        ArrayList<OnOffItemData> onoffData = new ArrayList<>();
-        for (int i=0; i<10; i++)
-        {
-            OnOffItemData onOffItem = new OnOffItemData();
-            onOffItem.setSensor = "센서 " + (i+1);
-            onoffData.add(onOffItem);
-        }
-
-        onoffView = (ListView)findViewById(R.id.onoff);
-        ListAdapter onOFFAdapter = new OnOffListAdapter(onoffData);
-        onoffView.setAdapter(onOFFAdapter);
-    }
-
-    private void setThreshold(){
-        int nDatCnt=0;
-        ArrayList<ThresholdItemData> thresholdData = new ArrayList<>();
-        for (int i=0; i<10; i++)
-        {
-            ThresholdItemData thresholdItem = new ThresholdItemData();
-            thresholdItem.sensorName = "센서 " + (i+1);
-            thresholdItem.maxValue = "1";
-            thresholdItem.minValue = "1";
-            thresholdData.add(thresholdItem);
-        }
-
-        thresholdView = (ListView)findViewById(R.id.threshold);
-        ListAdapter threshouldAdapter = new ThreshouldListAdapter(thresholdData);
-        thresholdView.setAdapter(threshouldAdapter);
-
-    }
-
-    private void setSetting(){
-        int nDatCnt=0;
-        ArrayList<SettingItemData> settingData = new ArrayList<>();
-        for (int i=0; i<10; i++)
-        {
-            SettingItemData settingItem = new SettingItemData();
-            settingItem.sensorName = "센서 " + (i+1);
-            settingItem.editValue = "1";
-            settingData.add(settingItem);
-        }
-
-        settingView = (ListView)findViewById(R.id.setting);
-        ListAdapter settingAdapter = new SettingListAdapter(settingData);
-        settingView.setAdapter(settingAdapter);
-
-    }
-
 
     /* 장치설정 전환 */
     private void setButtonSeleted() {
@@ -554,9 +525,11 @@ public class DashBoardActivity extends AppCompatActivity {
                 break;
             case 1:
                 frame.addView(thresholdView);
+                getThresholdSettings();
                 break;
             case 2:
                 frame.addView(settingView);
+                getValueSettings();
                 break;
         }
     }
@@ -568,7 +541,7 @@ public class DashBoardActivity extends AppCompatActivity {
         time.setText(DateUtils.formatDateTime(getBaseContext(), System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE));
     }
 
-    private void getSensorValue(int i, float value) {
+    private void getSensorValue(int i, String name, float value) {
         /* ---------------------------Grid-------------------------- */
         DisplayMetrics dm = getApplicationContext().getResources().getDisplayMetrics();
         int width = dm.widthPixels;
@@ -589,7 +562,7 @@ public class DashBoardActivity extends AppCompatActivity {
 //            areaButton.setId(@+id/area_bt);
         mButton.setWidth((width - pixels * 5) / 4);
         mButton.setHeight((width - pixels * 5) / 4);
-        mButton.setText("센서 " + Integer.toString(i + 1) +"\n" + "온도 : 23'C" + "습도 : 50%"); //버튼에 들어갈 텍스트를 지정(String)
+        mButton.setText(name + "\n" + value); //버튼에 들어갈 텍스트를 지정(String)
         mButton.getBackground().setColorFilter(Color.parseColor("#b5ddc0"), PorterDuff.Mode.DARKEN);
         params = new GridLayout.LayoutParams();
 
@@ -606,15 +579,130 @@ public class DashBoardActivity extends AppCompatActivity {
 
     }
 
-    private void setData(int count, float range) {
+    private void getOnOffSettings(){
+        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    System.out.println("response : " + response);
+                    JSONObject jsonResponse = response;
+                    JSONArray onOffSettingList = jsonResponse.getJSONArray("data");
+
+                    ArrayList<OnOffItemData> onoffData = new ArrayList<>();
+                    OnOffItemData onOffItem;
+
+                    for(int i=0; i<onOffSettingList.length(); i++) {
+                        String id = onOffSettingList.getJSONObject(i).getString("id");
+                        if(
+                                id.equals("1")||id.equals("3")||id.equals("20")||id.equals("24")||id.equals("29")||id.equals("30")||id.equals("31")||id.equals("47")||id.equals("48")
+                        ){
+                            onOffItem = new OnOffItemData();
+                            onOffItem.id = onOffSettingList.getJSONObject(i).getString("id");
+                            onOffItem.name = onOffSettingList.getJSONObject(i).getString("description");
+                            onOffItem.value = onOffSettingList.getJSONObject(i).getString("VALUE");
+                            onOffItem.time_stamp = onOffSettingList.getJSONObject(i).getString("time_stamp");
+                            onoffData.add(onOffItem);
+                        }
+                    }
+                    onoffView = (ListView)findViewById(R.id.onoff);
+                    ListAdapter onOFFAdapter = new OnOffListAdapter(onoffData);
+                    onoffView.setAdapter(onOFFAdapter);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/settings";
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
+        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+        queue.add(commonGetHttpRequest);
     }
 
-    private class HourAxisValueFormatter implements IAxisValueFormatter {
-        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
-        @Override
-        public String getFormattedValue(float value, AxisBase axis) {
-            Date valueDate = (new Date((long) value));
-            return dateTimeFormat.format(valueDate);
-        }
+    private void getThresholdSettings(){
+        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    System.out.println("response : " + response);
+                    JSONObject jsonResponse = response;
+                    JSONArray thresholdSettingList = jsonResponse.getJSONArray("data");
+
+                    ArrayList<ThresholdItemData> thresholdData = new ArrayList<>();
+                    ThresholdItemData thresholdItem = new ThresholdItemData();
+
+                    int count = 0;
+                    for(int i=0; i<thresholdSettingList.length(); i++) {
+                        String id = thresholdSettingList.getJSONObject(i).getString("id");
+                        if(
+                                id.equals("6")||id.equals("7")||id.equals("9")||id.equals("10")||id.equals("12")||id.equals("13")||id.equals("15")||id.equals("16")||id.equals("18")||id.equals("19")||id.equals("22")||id.equals("23")||id.equals("36")||id.equals("37")||id.equals("39")||id.equals("40")||id.equals("42")||id.equals("43")||id.equals("45")||id.equals("46")
+                        ){
+                            if(count%2==0) {
+                                thresholdItem = new ThresholdItemData();
+                                thresholdItem.id = thresholdSettingList.getJSONObject(i).getString("id");
+                                thresholdItem.name = thresholdSettingList.getJSONObject(i).getString("description");
+                                thresholdItem.minValue = thresholdSettingList.getJSONObject(i).getString("VALUE");
+                                thresholdItem.time_stamp = thresholdSettingList.getJSONObject(i).getString("time_stamp");
+                            } else {
+                                thresholdItem.maxValue = thresholdSettingList.getJSONObject(i).getString("VALUE");
+                                thresholdData.add(thresholdItem);
+                            }
+                            count++;
+                        }
+                    }
+                    thresholdView = (ListView)findViewById(R.id.threshold);
+                    ListAdapter threshouldAdapter = new ThreshouldListAdapter(thresholdData);
+                    thresholdView.setAdapter(threshouldAdapter);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/settings";
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
+        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+        queue.add(commonGetHttpRequest);
+    }
+
+    private void getValueSettings(){
+        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    System.out.println("response : " + response);
+                    JSONObject jsonResponse = response;
+                    JSONArray valueSettingList = jsonResponse.getJSONArray("data");
+
+                    ArrayList<SettingItemData> settingData = new ArrayList<>();
+                    SettingItemData settingItem;
+
+                    for(int i=0; i<valueSettingList.length(); i++) {
+                        String id = valueSettingList.getJSONObject(i).getString("id");
+                        if(
+                                id.equals("5")||id.equals("8")||id.equals("11")||id.equals("14")||id.equals("17")||id.equals("21")||id.equals("35")||id.equals("38")||id.equals("41")||id.equals("44")
+                        ){
+                            settingItem = new SettingItemData();
+                            settingItem.id = valueSettingList.getJSONObject(i).getString("id");
+                            settingItem.name = valueSettingList.getJSONObject(i).getString("description");
+                            settingItem.value = valueSettingList.getJSONObject(i).getString("VALUE");
+                            settingItem.time_stamp = valueSettingList.getJSONObject(i).getString("time_stamp");
+                            settingData.add(settingItem);
+                            System.out.println("id : "+settingItem.id+" name : "+settingItem.name);
+                        }
+                    }
+                    settingView = (ListView)findViewById(R.id.setting);
+                    ListAdapter settingAdapter = new SettingListAdapter(settingData);
+                    settingView.setAdapter(settingAdapter);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/settings";
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
+        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+        queue.add(commonGetHttpRequest);
     }
 }

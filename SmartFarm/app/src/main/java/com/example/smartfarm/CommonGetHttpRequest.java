@@ -11,9 +11,10 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
-public class AreaListRequest extends JsonRequest<JSONObject> {
-    public AreaListRequest(int method, String url, JSONObject jsonRequest,
-                           Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+public class CommonGetHttpRequest extends JsonRequest<JSONObject> {
+
+    public CommonGetHttpRequest(int method, String url, JSONObject jsonRequest,
+                                Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
         super(method, url, (jsonRequest == null) ? null : jsonRequest.toString(), listener,
                 errorListener);
     }

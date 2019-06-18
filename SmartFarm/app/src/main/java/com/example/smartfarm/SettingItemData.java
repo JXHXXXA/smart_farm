@@ -1,6 +1,8 @@
 package com.example.smartfarm;
 
 public class SettingItemData {
-    public String sensorName;
-    public String editValue;
+    public String id;
+    public String name;
+    public String value;
+    public String time_stamp;
 }

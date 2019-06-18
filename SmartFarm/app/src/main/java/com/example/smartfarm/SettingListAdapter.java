@@ -50,8 +50,8 @@ public class SettingListAdapter extends BaseAdapter {
         TextView sensor = (TextView) convertView.findViewById(R.id.setting_sensor_name);
         EditText settingEdit = (EditText) convertView.findViewById(R.id.setting_edit_value);
 
-        sensor.setText(m_itemDataList.get(position).sensorName);
-        settingEdit.setText(m_itemDataList.get(position).editValue);
+        sensor.setText(m_itemDataList.get(position).name);
+        settingEdit.setText(m_itemDataList.get(position).value);
         return convertView;
     }
 }

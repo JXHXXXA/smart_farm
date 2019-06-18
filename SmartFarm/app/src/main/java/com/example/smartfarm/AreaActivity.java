@@ -99,16 +99,6 @@ public class AreaActivity extends AppCompatActivity implements View.OnClickListe
                         final int position = i+1;
                         gl.addView(areaButton, i, params);
 
-//                        areaButton.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View view) {
-//                                Intent intent = new Intent(
-//                                        getApplicationContext(), // 현재 화면의 제어권자
-//                                        DashBoardActivity.class); // 다음 넘어갈 클래스 지정
-//                                startActivity(intent); // 다음 화면으로 넘어간다
-//                                System.out.println(position);
-//                            }
-//                        });
                     }
 
                     for(int i=0; i<farmList.length(); i++) {
@@ -121,18 +111,16 @@ public class AreaActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
         String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/farms/"+farm_id+"/areas";
-        AreaListRequest listRequest = new AreaListRequest(Request.Method.GET, url, null, responseListener, null);
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(AreaActivity.this);
-        queue.add(listRequest);
+        queue.add(commonGetHttpRequest);
     }
 
     @Override
     public void onClick(View v) {
         Button targetFarm = (Button) v;
-        for(Button areaButton : areaButtons)
-        {
-            if(areaButton == targetFarm)
-            {
+        for(Button areaButton : areaButtons) {
+            if(areaButton == targetFarm) {
                 Intent intent = new Intent(getApplicationContext(), DashBoardActivity.class);
                 intent.putExtra("area_id", Integer.toString(areaButton.getId()));
                 startActivity(intent);

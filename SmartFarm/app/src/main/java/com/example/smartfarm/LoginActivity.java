@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -41,6 +43,8 @@ public class LoginActivity extends AppCompatActivity {
 
         idText = (EditText) findViewById(R.id.login_id_input);
         pwText = (EditText) findViewById(R.id.login_pw_input);
+        pwText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD );
+        pwText.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
         joinBtn.setOnClickListener(new View.OnClickListener() {
             @Override

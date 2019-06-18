@@ -57,7 +57,12 @@ public class OnOffListAdapter extends BaseAdapter {
         TextView sensor = (TextView) convertView.findViewById(R.id.onoff_sensor_name);
         ToggleButton toggleBnt = (ToggleButton) convertView.findViewById(R.id.onfoff_toggle);
 
-        sensor.setText(m_itemDataList.get(position).setSensor);
+        sensor.setText(m_itemDataList.get(position).name);
+        if(m_itemDataList.get(position).value.equals("0"))
+            toggleBnt.setChecked(false);
+        else
+            toggleBnt.setChecked(true);
+
         return convertView;
     }
 }

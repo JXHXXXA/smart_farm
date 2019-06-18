@@ -53,9 +53,10 @@ public class ThreshouldListAdapter extends BaseAdapter {
         EditText thresholdEditMin = (EditText) convertView.findViewById(R.id.threshold_edit_min);
         EditText thresholdEditMax = (EditText) convertView.findViewById(R.id.threshold_edit_max);
 
-        sensor.setText(m_itemDataList.get(position).sensorName);
+        sensor.setText(m_itemDataList.get(position).name);
         thresholdEditMin.setText(m_itemDataList.get(position).minValue);
         thresholdEditMax.setText(m_itemDataList.get(position).maxValue);
+
         return convertView;
     }
 }

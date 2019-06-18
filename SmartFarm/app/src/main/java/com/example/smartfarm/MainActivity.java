@@ -93,9 +93,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
         String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/users/"+user_id+"/farms";
-        FarmListRequest listRequest = new FarmListRequest(Request.Method.GET, url, null, responseListener, null);
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-        queue.add(listRequest);
+        queue.add(commonGetHttpRequest);
     }
 
     @Override
