@@ -585,7 +585,6 @@ public class DashBoardActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        Toast.makeText(getApplicationContext(), "On/Off 제어가 설정되었습니다.", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -738,7 +737,7 @@ public class DashBoardActivity extends AppCompatActivity {
         }
         byte[] bytes = settingDatas.getBytes("UTF-8");
         String sendBody = new String(bytes, Charset.forName("UTF-8"));
-        System.out.println("settingDatas : "+sendBody);
+//        System.out.println("settingDatas : "+sendBody);
 
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
@@ -746,7 +745,11 @@ public class DashBoardActivity extends AppCompatActivity {
                 try {
                     System.out.println("response : " + response);
                     String status = response.getString("status");
-                    System.out.println("status : " + status);
+
+                    if(status.equals("1"))
+                        Toast.makeText(getApplicationContext(), "On/Off 제어가 설정되었습니다.", Toast.LENGTH_LONG).show();
+                    else
+                        Toast.makeText(getApplicationContext(), "On/Off 제어에 실패하였습니다.", Toast.LENGTH_LONG).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -761,13 +764,9 @@ public class DashBoardActivity extends AppCompatActivity {
         System.out.println("jsonRequest : " + jsonRequest);
 
         String url = "http://113.198.235.230:18080/app/setting";
-        OnOffSettingRequest onOffSettingRequest = new OnOffSettingRequest(Request.Method.POST, url, null, responseListener, null);
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.POST, url, jsonRequest, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
-        queue.add(onOffSettingRequest);
-
-//        OnOffSettingRequest onOffSettingRequest = new OnOffSettingRequest(area_id, sendBody, responseListener);
-//        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
-//        queue.add(onOffSettingRequest);
+        queue.add(commonGetHttpRequest);
     }
 
     private void getThresholdSettings(){
@@ -815,17 +814,46 @@ public class DashBoardActivity extends AppCompatActivity {
         queue.add(commonGetHttpRequest);
     }
 
-    private void setThresholdSettings(){
-        Response.Listener<String> responseListener = new Response.Listener<String>() {
+    private void setThresholdSettings() throws UnsupportedEncodingException, JSONException {
+        settingDatas = "";
+        for(int i=0; i<onoffData.size(); i++){
+            if(i==onoffData.size()-1)
+                settingDatas = settingDatas+onoffData.get(i).value;
+            else
+                settingDatas = settingDatas+onoffData.get(i).value+", ";
+        }
+        byte[] bytes = settingDatas.getBytes("UTF-8");
+        String sendBody = new String(bytes, Charset.forName("UTF-8"));
+//        System.out.println("settingDatas : "+sendBody);
+
+        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
-                System.out.println("response : " + response);
+            public void onResponse(JSONObject response) {
+                try {
+                    System.out.println("response : " + response);
+                    String status = response.getString("status");
+
+                    if(status.equals("1"))
+                        Toast.makeText(getApplicationContext(), "On/Off 제어가 설정되었습니다.", Toast.LENGTH_LONG).show();
+                    else
+                        Toast.makeText(getApplicationContext(), "On/Off 제어에 실패하였습니다.", Toast.LENGTH_LONG).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         };
 
-//        OnOffSettingRequest onOffSettingRequest = new OnOffSettingRequest(area_id, settingDatas, responseListener);
-//        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
-//        queue.add(onOffSettingRequest);
+        JSONObject jsonRequest = new JSONObject();
+        jsonRequest.put("area_id", area_id);
+        jsonRequest.put("datas", sendBody);
+
+        System.out.println("jsonRequest : " + jsonRequest);
+
+        String url = "http://113.198.235.230:18080/app/setting";
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.POST, url, jsonRequest, responseListener, null);
+        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+        queue.add(commonGetHttpRequest);
     }
 
     private void getValueSettings(){
@@ -867,15 +895,45 @@ public class DashBoardActivity extends AppCompatActivity {
         queue.add(commonGetHttpRequest);
     }
 
-    private void setValueSettings(){
-        Response.Listener<String> responseListener = new Response.Listener<String>() {
+    private void setValueSettings() throws UnsupportedEncodingException, JSONException {
+        settingDatas = "";
+        for(int i=0; i<onoffData.size(); i++){
+            if(i==onoffData.size()-1)
+                settingDatas = settingDatas+onoffData.get(i).value;
+            else
+                settingDatas = settingDatas+onoffData.get(i).value+", ";
+        }
+        byte[] bytes = settingDatas.getBytes("UTF-8");
+        String sendBody = new String(bytes, Charset.forName("UTF-8"));
+//        System.out.println("settingDatas : "+sendBody);
+
+        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
-                System.out.println("response : " + response);
+            public void onResponse(JSONObject response) {
+                try {
+                    System.out.println("response : " + response);
+                    String status = response.getString("status");
+
+                    if(status.equals("1"))
+                        Toast.makeText(getApplicationContext(), "On/Off 제어가 설정되었습니다.", Toast.LENGTH_LONG).show();
+                    else
+                        Toast.makeText(getApplicationContext(), "On/Off 제어에 실패하였습니다.", Toast.LENGTH_LONG).show();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         };
-//        OnOffSettingRequest onOffSettingRequest = new OnOffSettingRequest(area_id, settingDatas, responseListener);
-//        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
-//        queue.add(onOffSettingRequest);
+
+        JSONObject jsonRequest = new JSONObject();
+        jsonRequest.put("area_id", area_id);
+        jsonRequest.put("datas", sendBody);
+
+        System.out.println("jsonRequest : " + jsonRequest);
+
+        String url = "http://113.198.235.230:18080/app/setting";
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.POST, url, jsonRequest, responseListener, null);
+        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+        queue.add(commonGetHttpRequest);
     }
 }
