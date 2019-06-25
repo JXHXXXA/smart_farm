@@ -42,12 +42,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class DashBoardActivity extends AppCompatActivity {
@@ -58,8 +59,6 @@ public class DashBoardActivity extends AppCompatActivity {
     ArrayList<Entry> sensor_entry;
 
     ImageView backImg;
-
-    float[] sensor_values;
 
     long reference_timestamp;
 
@@ -73,7 +72,7 @@ public class DashBoardActivity extends AppCompatActivity {
     ListView errorView;
     private LineChart lineChart;
 
-    ImageView imgView;
+    ImageView verify;
     FrameLayout frame;
     Button button1;
     Button button2;
@@ -85,6 +84,18 @@ public class DashBoardActivity extends AppCompatActivity {
     Spinner spinner;
     ArrayAdapter arrayAdapter;
 
+    ArrayList<OnOffItemData> onoffData;
+    OnOffItemData onOffItem;
+    ArrayList<ThresholdItemData> thresholdData;
+    ThresholdItemData thresholdItem;
+    ArrayList<SettingItemData> settingData;
+    SettingItemData settingItem;
+
+    String settingDatas;
+
+    SimpleDateFormat timeStampFormat;
+    SimpleDateFormat dateFormat;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +105,8 @@ public class DashBoardActivity extends AppCompatActivity {
         area_id = intent.getStringExtra("area_id");
         System.out.println("area_id : " + area_id);
 
-        sensor_values = new float[23];
+        timeStampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        dateFormat = new SimpleDateFormat(" yyyy/MM/dd");
 
         area_name = (TextView) findViewById(R.id.area_name);
         area_name.setText("코끼리 하마 농장 "+ area_id +"동");
@@ -133,40 +145,47 @@ public class DashBoardActivity extends AppCompatActivity {
         ts4.setIndicator("오류");
         tabHost1.addTab(ts4);
 
-        imgView = (ImageView) findViewById(R.id.verified);
+        verify = (ImageView) findViewById(R.id.verified);
         tabHost1.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
                 if (ts1.getTag().equals(tabId)) {
-                    imgView.setVisibility(View.INVISIBLE);
+                    verify.setVisibility(View.INVISIBLE);
                 }
 
                 if (ts2.getTag().equals(tabId)) {
-                    imgView.setVisibility(View.VISIBLE);
+                    verify.setVisibility(View.VISIBLE);
+                    verify.setOnClickListener(new Button.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            try {
+                                setOnOffSettings();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            Toast.makeText(getApplicationContext(), "On/Off 제어가 설정되었습니다.", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
 
                 if (ts3.getTag().equals(tabId)) {
-                    imgView.setVisibility(View.VISIBLE);
+                    verify.setVisibility(View.INVISIBLE);
                 }
 
                 if (ts4.getTag().equals(tabId)) {
-                    imgView.setVisibility(View.VISIBLE);
+                    verify.setVisibility(View.INVISIBLE);
                 }
-            }
-        });
-
-        imgView.setOnClickListener(new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.println("헤헤");
             }
         });
 
         sensor_entry = new ArrayList<>();
 
         /* here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-        setSensorValueList();
-        getTime();
+        getSensorValueList();
+
+        time = (TextView) findViewById(R.id.dash_board_time);
 
         setButtonSeleted();
 
@@ -192,7 +211,6 @@ public class DashBoardActivity extends AppCompatActivity {
         button3.setSelected(false);
 
         Date today = new Date();      // birthday 버튼의 초기화를 위해 date 객체와 SimpleDataFormat 사용
-        SimpleDateFormat dateFormat = new SimpleDateFormat(" yyyy/MM/dd");
         String result = dateFormat.format(today);
 
         statisticsStartDate = (Button) findViewById(R.id.statistics_start_date);
@@ -224,7 +242,7 @@ public class DashBoardActivity extends AppCompatActivity {
         });
 
         // 통계 서버연동
-        getSensorValue(5, "20190619", "indoor_temperature");
+        getSensorValue(5, "20190624", "indoor_temperature");
     }
 
    public void onStartDateClicked(View v) {
@@ -298,7 +316,7 @@ public class DashBoardActivity extends AppCompatActivity {
     }
 
 
-    private void setSensorValueList(){
+    private void getSensorValueList(){
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -307,57 +325,26 @@ public class DashBoardActivity extends AppCompatActivity {
                     JSONObject jsonResponse = response;
                     JSONArray farmList = jsonResponse.getJSONArray("data");
 
+                    int count = 0;
                     for(int i=0; i<farmList.length(); i++) {
                         sensor_id = farmList.getJSONObject(i).getString("sensor_id");
                         value = farmList.getJSONObject(i).getString("value");
                         time_stamp = farmList.getJSONObject(i).getString("time_stamp");
 
-                        if(sensor_id.equals(""+SensorType.INDOOR_TEMP_1))
-                            getSensorValue(i, "실내온도1", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.INDOOR_TEMP_2))
-                            getSensorValue(i, "실내온도2", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.INDOOR_TEMP_3))
-                            getSensorValue(i, "실내온도3", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.INDOOR_TEMP_4))
-                            getSensorValue(i, "실내온도4", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.WATER_TEMP))
-                            getSensorValue(i, "온수온도", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.CO2_1))
-                            getSensorValue(i, "이산화탄소1", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.CO2_2))
-                            getSensorValue(i, "이산화탄소2", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.CO2_3))
-                            getSensorValue(i, "이산화탄소3", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.CO2_4))
-                            getSensorValue(i, "이산화탄소4", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.HUMIDITY_1))
-                            getSensorValue(i, "습도1", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.HUMIDITY_2))
-                            getSensorValue(i, "습도2", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.HUMIDITY_3))
-                            getSensorValue(i, "습도3", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.HUMIDITY_4))
-                            getSensorValue(i, "습도4", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.GROWTH_MEDIUM_1))
-                            getSensorValue(i, "배지습도1", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.GROWTH_MEDIUM_2))
-                            getSensorValue(i, "배지습도2", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.GROWTH_MEDIUM_3))
-                            getSensorValue(i, "배지습도3", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.ILLUMINANCE))
-                            getSensorValue(i, "조명", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.SCALE_1))
-                            getSensorValue(i, "전자저울1", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.SCALE_2))
-                            getSensorValue(i, "전자저울2", Float.parseFloat(value));
-                        else if(sensor_id.equals(""+SensorType.SCALE_3))
-                            getSensorValue(i, "전자저울3", Float.parseFloat(value));
+                        if(SensorType.hasSensorType(sensor_id)){
+                            getSensorValue(count, SensorType.getSensorName(sensor_id), Float.parseFloat(value));
+                            count++;
+                        }
 
-                        sensor_values[Integer.parseInt(sensor_id)-1] = Float.parseFloat(value);
+//                        sensor_values[Integer.parseInt(sensor_id)-1] = Float.parseFloat(value);
 //                        System.out.println("sensor_id : " + (Integer.parseInt(sensor_id)) + " , value : " + sensor_values[Integer.parseInt(sensor_id)-1]);
                     }
 
+                    time.setText(DateUtils.formatDateTime(getBaseContext(), timeStampFormat.parse(time_stamp).getTime(), DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE));
+
                 } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
@@ -380,8 +367,6 @@ public class DashBoardActivity extends AppCompatActivity {
                     reference_timestamp = 0;
                     String strTime;
                     Date timeStamp;
-                    SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-//                        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
                     for(int i=0; i<sensorValueList.length(); i++) {
                         strTime = sensorValueList.getJSONObject(i).getString("time_stamp");
@@ -488,6 +473,19 @@ public class DashBoardActivity extends AppCompatActivity {
                 button2.setSelected(false);
                 button3.setSelected(false);
                 changeView(0);
+                verify.setOnClickListener(new Button.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        try {
+                            setOnOffSettings();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(getApplicationContext(), "On/Off 제어가 설정되었습니다.", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
 
@@ -499,6 +497,13 @@ public class DashBoardActivity extends AppCompatActivity {
                 button2.setSelected(true);
                 button3.setSelected(false);
                 changeView(1);
+                verify.setOnClickListener(new Button.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+//                            setOnOffSettings();
+                        Toast.makeText(getApplicationContext(), "임계치가 설정되었습니다.", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
 
@@ -510,6 +515,13 @@ public class DashBoardActivity extends AppCompatActivity {
                 button2.setSelected(false);
                 button3.setSelected(true);
                 changeView(2);
+                verify.setOnClickListener(new Button.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+//                            setOnOffSettings();
+                        Toast.makeText(getApplicationContext(), "목표값이 설정되었습니다.", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
     }
@@ -522,6 +534,7 @@ public class DashBoardActivity extends AppCompatActivity {
         switch (index) {
             case 0:
                 frame.addView(onoffView);
+                getOnOffSettings();
                 break;
             case 1:
                 frame.addView(thresholdView);
@@ -532,13 +545,6 @@ public class DashBoardActivity extends AppCompatActivity {
                 getValueSettings();
                 break;
         }
-    }
-
-
-    private void getTime() {
-        /* 일단 현재 시간 받아오는거로..*/
-        time = (TextView) findViewById(R.id.dash_board_time);
-        time.setText(DateUtils.formatDateTime(getBaseContext(), System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE));
     }
 
     private void getSensorValue(int i, String name, float value) {
@@ -563,6 +569,7 @@ public class DashBoardActivity extends AppCompatActivity {
         mButton.setWidth((width - pixels * 5) / 4);
         mButton.setHeight((width - pixels * 5) / 4);
         mButton.setText(name + "\n" + value); //버튼에 들어갈 텍스트를 지정(String)
+        mButton.setTextSize(13);
         mButton.getBackground().setColorFilter(Color.parseColor("#b5ddc0"), PorterDuff.Mode.DARKEN);
         params = new GridLayout.LayoutParams();
 
@@ -588,14 +595,13 @@ public class DashBoardActivity extends AppCompatActivity {
                     JSONObject jsonResponse = response;
                     JSONArray onOffSettingList = jsonResponse.getJSONArray("data");
 
-                    ArrayList<OnOffItemData> onoffData = new ArrayList<>();
-                    OnOffItemData onOffItem;
+                    onoffData = new ArrayList<>();
+                    onOffItem = new OnOffItemData();
 
                     for(int i=0; i<onOffSettingList.length(); i++) {
                         String id = onOffSettingList.getJSONObject(i).getString("id");
-                        if(
-                                id.equals("1")||id.equals("3")||id.equals("20")||id.equals("24")||id.equals("29")||id.equals("30")||id.equals("31")||id.equals("47")||id.equals("48")
-                        ){
+
+                        if(SettingType.hasOnOffSetting(id)){
                             onOffItem = new OnOffItemData();
                             onOffItem.id = onOffSettingList.getJSONObject(i).getString("id");
                             onOffItem.name = onOffSettingList.getJSONObject(i).getString("description");
@@ -604,6 +610,7 @@ public class DashBoardActivity extends AppCompatActivity {
                             onoffData.add(onOffItem);
                         }
                     }
+
                     onoffView = (ListView)findViewById(R.id.onoff);
                     ListAdapter onOFFAdapter = new OnOffListAdapter(onoffData);
                     onoffView.setAdapter(onOFFAdapter);
@@ -619,6 +626,48 @@ public class DashBoardActivity extends AppCompatActivity {
         queue.add(commonGetHttpRequest);
     }
 
+    private void setOnOffSettings() throws UnsupportedEncodingException, JSONException {
+        settingDatas = "";
+        for(int i=0; i<onoffData.size(); i++){
+            if(i==onoffData.size()-1)
+                settingDatas = settingDatas+onoffData.get(i).value;
+            else
+                settingDatas = settingDatas+onoffData.get(i).value+", ";
+        }
+        byte[] bytes = settingDatas.getBytes("UTF-8");
+        String sendBody = new String(bytes, Charset.forName("UTF-8"));
+        System.out.println("settingDatas : "+sendBody);
+
+        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    System.out.println("response : " + response);
+                    String status = response.getString("status");
+                    System.out.println("status : " + status);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        JSONObject jsonRequest = new JSONObject();
+        jsonRequest.put("area_id", area_id);
+        jsonRequest.put("datas", sendBody);
+
+        System.out.println("jsonRequest : " + jsonRequest);
+
+        String url = "http://113.198.235.230:18080/app/setting";
+        OnOffSettingRequest onOffSettingRequest = new OnOffSettingRequest(Request.Method.POST, url, null, responseListener, null);
+        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+        queue.add(onOffSettingRequest);
+
+//        OnOffSettingRequest onOffSettingRequest = new OnOffSettingRequest(area_id, sendBody, responseListener);
+//        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+//        queue.add(onOffSettingRequest);
+    }
+
     private void getThresholdSettings(){
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
@@ -628,15 +677,14 @@ public class DashBoardActivity extends AppCompatActivity {
                     JSONObject jsonResponse = response;
                     JSONArray thresholdSettingList = jsonResponse.getJSONArray("data");
 
-                    ArrayList<ThresholdItemData> thresholdData = new ArrayList<>();
-                    ThresholdItemData thresholdItem = new ThresholdItemData();
+                    thresholdData = new ArrayList<>();
+                    thresholdItem = new ThresholdItemData();
 
                     int count = 0;
                     for(int i=0; i<thresholdSettingList.length(); i++) {
                         String id = thresholdSettingList.getJSONObject(i).getString("id");
-                        if(
-                                id.equals("6")||id.equals("7")||id.equals("9")||id.equals("10")||id.equals("12")||id.equals("13")||id.equals("15")||id.equals("16")||id.equals("18")||id.equals("19")||id.equals("22")||id.equals("23")||id.equals("36")||id.equals("37")||id.equals("39")||id.equals("40")||id.equals("42")||id.equals("43")||id.equals("45")||id.equals("46")
-                        ){
+
+                        if(SettingType.hasThresholdSetting(id)){
                             if(count%2==0) {
                                 thresholdItem = new ThresholdItemData();
                                 thresholdItem.id = thresholdSettingList.getJSONObject(i).getString("id");
@@ -665,6 +713,19 @@ public class DashBoardActivity extends AppCompatActivity {
         queue.add(commonGetHttpRequest);
     }
 
+    private void setThresholdSettings(){
+        Response.Listener<String> responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                System.out.println("response : " + response);
+            }
+        };
+
+//        OnOffSettingRequest onOffSettingRequest = new OnOffSettingRequest(area_id, settingDatas, responseListener);
+//        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+//        queue.add(onOffSettingRequest);
+    }
+
     private void getValueSettings(){
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
@@ -674,21 +735,19 @@ public class DashBoardActivity extends AppCompatActivity {
                     JSONObject jsonResponse = response;
                     JSONArray valueSettingList = jsonResponse.getJSONArray("data");
 
-                    ArrayList<SettingItemData> settingData = new ArrayList<>();
-                    SettingItemData settingItem;
+                    settingData = new ArrayList<>();
+                    settingItem = new SettingItemData();
 
                     for(int i=0; i<valueSettingList.length(); i++) {
                         String id = valueSettingList.getJSONObject(i).getString("id");
-                        if(
-                                id.equals("5")||id.equals("8")||id.equals("11")||id.equals("14")||id.equals("17")||id.equals("21")||id.equals("35")||id.equals("38")||id.equals("41")||id.equals("44")
-                        ){
+
+                        if(SettingType.hasValueSetting(id)){
                             settingItem = new SettingItemData();
                             settingItem.id = valueSettingList.getJSONObject(i).getString("id");
                             settingItem.name = valueSettingList.getJSONObject(i).getString("description");
                             settingItem.value = valueSettingList.getJSONObject(i).getString("VALUE");
                             settingItem.time_stamp = valueSettingList.getJSONObject(i).getString("time_stamp");
                             settingData.add(settingItem);
-                            System.out.println("id : "+settingItem.id+" name : "+settingItem.name);
                         }
                     }
                     settingView = (ListView)findViewById(R.id.setting);
@@ -704,5 +763,17 @@ public class DashBoardActivity extends AppCompatActivity {
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
         queue.add(commonGetHttpRequest);
+    }
+
+    private void setValueSettings(){
+        Response.Listener<String> responseListener = new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                System.out.println("response : " + response);
+            }
+        };
+//        OnOffSettingRequest onOffSettingRequest = new OnOffSettingRequest(area_id, settingDatas, responseListener);
+//        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+//        queue.add(onOffSettingRequest);
     }
 }

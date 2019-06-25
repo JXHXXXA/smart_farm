@@ -37,10 +37,10 @@ public class SensorMarkerView extends MarkerView {
 
             CandleEntry ce = (CandleEntry) e;
 
-            tvContent.setText("" + Utils.formatNumber(ce.getHigh(), 1, true));
+            tvContent.setText("" + Utils.formatNumber(ce.getHigh(), 1, false));
         } else {
 
-            tvContent.setText("" + Utils.formatNumber(e.getY(), 1, true));
+            tvContent.setText("" + Utils.formatNumber(e.getY(), 1, false));
         }
 
         super.refreshContent(e, highlight);
