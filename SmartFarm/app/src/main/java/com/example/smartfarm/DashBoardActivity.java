@@ -79,6 +79,8 @@ public class DashBoardActivity extends AppCompatActivity {
     Button button3;
 
     Button statisticsStartDate, statisticsEndDate, statisticsSearch;
+    String searchSensorName;
+    int searchSensorId;
 
     Button startDate, endDate, error_search;
     Spinner spinner;
@@ -94,7 +96,7 @@ public class DashBoardActivity extends AppCompatActivity {
     String settingDatas;
 
     SimpleDateFormat timeStampFormat;
-    SimpleDateFormat dateFormat;
+    SimpleDateFormat dateFormat, dateFormat2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +109,7 @@ public class DashBoardActivity extends AppCompatActivity {
 
         timeStampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         dateFormat = new SimpleDateFormat(" yyyy/MM/dd");
+        dateFormat2 = new SimpleDateFormat("yyyyMMdd");
 
         area_name = (TextView) findViewById(R.id.area_name);
         area_name.setText("코끼리 하마 농장 "+ area_id +"동");
@@ -211,18 +214,24 @@ public class DashBoardActivity extends AppCompatActivity {
         button3.setSelected(false);
 
         Date today = new Date();      // birthday 버튼의 초기화를 위해 date 객체와 SimpleDataFormat 사용
-        String result = dateFormat.format(today);
+        String _today = dateFormat.format(today);
+        String _today2 = dateFormat2.format(today);
 
         statisticsStartDate = (Button) findViewById(R.id.statistics_start_date);
         statisticsEndDate = (Button) findViewById(R.id.statistics_end_date);
         statisticsSearch = (Button) findViewById(R.id.statistics_search);
 
-        statisticsStartDate.setText(result);
-        statisticsEndDate.setText(result);
+        statisticsStartDate.setText(_today);
+        statisticsStartDate.setId(Integer.parseInt(_today2));
+
+        statisticsEndDate.setText(_today);
+        statisticsEndDate.setId(Integer.parseInt(_today2));
+
         statisticsSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), statisticsStartDate.getText().toString() + "\n" + statisticsEndDate.getText().toString(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), statisticsStartDate.getText().toString() + "\n" + statisticsEndDate.getText().toString(), Toast.LENGTH_LONG).show();
+                getSensorValue(searchSensorId, Integer.toString(statisticsStartDate.getId()), Integer.toString(statisticsEndDate.getId()), searchSensorName);
             }
         });
 
@@ -232,20 +241,31 @@ public class DashBoardActivity extends AppCompatActivity {
         errorView = (ListView) findViewById(R.id.error_table);
 
         /* 에러 날짜 */
-        startDate.setText(result);
-        endDate.setText(result);
+        startDate.setText(_today);
+        startDate.setId(Integer.parseInt(_today2));
+
+        endDate.setText(_today);
+        endDate.setId(Integer.parseInt(_today2));
+
         error_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), startDate.getText().toString() + "\n" + endDate.getText().toString(), Toast.LENGTH_LONG).show();
             }
         });
-
-        // 통계 서버연동
-        getSensorValue(5, "20190624", "indoor_temperature");
     }
 
-   public void onStartDateClicked(View v) {
+    public void onStatisticsStartDateClicked(View v) {
+        android.support.v4.app.DialogFragment newFragment = new DatePickerFragment(2);   //DatePickerFragment 객체 생성
+        newFragment.show(getSupportFragmentManager(), "datePicker");                //프래그먼트 매니저를 이용하여 프래그먼트 보여주기
+    }
+
+    public void onStatisticsEndDateClicked(View v) {
+        android.support.v4.app.DialogFragment newFragment = new DatePickerFragment(3);   //DatePickerFragment 객체 생성
+        newFragment.show(getSupportFragmentManager(), "datePicker");                //프래그먼트 매니저를 이용하여 프래그먼트 보여주기
+    }
+
+    public void onStartDateClicked(View v) {
         android.support.v4.app.DialogFragment newFragment = new DatePickerFragment(0);   //DatePickerFragment 객체 생성
         newFragment.show(getSupportFragmentManager(), "datePicker");                //프래그먼트 매니저를 이용하여 프래그먼트 보여주기
     }
@@ -308,6 +328,88 @@ public class DashBoardActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Toast.makeText(getApplicationContext(), adapterView.getSelectedItem().toString()+"(이)가 선택되었습니다.",
                         Toast.LENGTH_SHORT).show();
+                if(adapterView.getSelectedItem().toString().equals("실내온도1")
+                || adapterView.getSelectedItem().toString().equals("실내온도2")
+                || adapterView.getSelectedItem().toString().equals("실내온도3")
+                || adapterView.getSelectedItem().toString().equals("실내온도4")){
+                    searchSensorName = "indoor_temperature";
+                    if(adapterView.getSelectedItem().toString().equals("실내온도1"))
+                        searchSensorId = 2;
+                    else if(adapterView.getSelectedItem().toString().equals("실내온도2"))
+                        searchSensorId = 3;
+                    else if(adapterView.getSelectedItem().toString().equals("실내온도3"))
+                        searchSensorId = 4;
+                    else if(adapterView.getSelectedItem().toString().equals("실내온도4"))
+                        searchSensorId = 5;
+                }
+                else if(adapterView.getSelectedItem().toString().equals("온수온도")){
+                    searchSensorName = "water_temperature";
+                    searchSensorId = 6;
+                }
+                else if(adapterView.getSelectedItem().toString().equals("이산화탄소1")
+                    || adapterView.getSelectedItem().toString().equals("이산화탄소2")
+                    || adapterView.getSelectedItem().toString().equals("이산화탄소3")
+                    || adapterView.getSelectedItem().toString().equals("이산화탄소4")
+                    || adapterView.getSelectedItem().toString().equals("이산화탄소5")
+                    || adapterView.getSelectedItem().toString().equals("이산화탄소6")){
+                    searchSensorName = "co2";
+                    if(adapterView.getSelectedItem().toString().equals("이산화탄소1"))
+                        searchSensorId = 8;
+                    else if(adapterView.getSelectedItem().toString().equals("이산화탄소2"))
+                        searchSensorId = 9;
+                    else if(adapterView.getSelectedItem().toString().equals("이산화탄소3"))
+                        searchSensorId = 10;
+                    else if(adapterView.getSelectedItem().toString().equals("이산화탄소4"))
+                        searchSensorId = 11;
+                    else if(adapterView.getSelectedItem().toString().equals("이산화탄소5"))
+                        searchSensorId = 12;
+                    else if(adapterView.getSelectedItem().toString().equals("이산화탄소6"))
+                        searchSensorId = 13;
+                }
+                else if(adapterView.getSelectedItem().toString().equals("습도1")
+                    || adapterView.getSelectedItem().toString().equals("습도2")
+                    || adapterView.getSelectedItem().toString().equals("습도3")
+                    || adapterView.getSelectedItem().toString().equals("습도4")
+                    || adapterView.getSelectedItem().toString().equals("습도5")
+                    || adapterView.getSelectedItem().toString().equals("습도6")){
+                    searchSensorName = "humidity";
+                    if(adapterView.getSelectedItem().toString().equals("습도1"))
+                        searchSensorId = 15;
+                    else if(adapterView.getSelectedItem().toString().equals("습도2"))
+                        searchSensorId = 16;
+                    else if(adapterView.getSelectedItem().toString().equals("습도3"))
+                        searchSensorId = 17;
+                    else if(adapterView.getSelectedItem().toString().equals("습도4"))
+                        searchSensorId = 18;
+                    else if(adapterView.getSelectedItem().toString().equals("습도5"))
+                        searchSensorId = 19;
+                    else if(adapterView.getSelectedItem().toString().equals("습도6"))
+                        searchSensorId = 20;
+                }
+                else if(adapterView.getSelectedItem().toString().equals("전자저울1")
+                    || adapterView.getSelectedItem().toString().equals("전자저울2")
+                    || adapterView.getSelectedItem().toString().equals("전자저울3")
+                    || adapterView.getSelectedItem().toString().equals("전자저울4")
+                    || adapterView.getSelectedItem().toString().equals("전자저울5")
+                    || adapterView.getSelectedItem().toString().equals("전자저울6")){
+                    searchSensorName = "scale";
+                    if(adapterView.getSelectedItem().toString().equals("전자저울1"))
+                        searchSensorId = 21;
+                    else if(adapterView.getSelectedItem().toString().equals("전자저울2"))
+                        searchSensorId = 22;
+                    else if(adapterView.getSelectedItem().toString().equals("전자저울3"))
+                        searchSensorId = 23;
+                    else if(adapterView.getSelectedItem().toString().equals("전자저울4"))
+                        searchSensorId = 24;
+                    else if(adapterView.getSelectedItem().toString().equals("전자저울5"))
+                        searchSensorId = 25;
+                    else if(adapterView.getSelectedItem().toString().equals("전자저울6"))
+                        searchSensorId = 26;
+                }
+                else if(adapterView.getSelectedItem().toString().equals("조명")){
+                    searchSensorName = "illuminance";
+                    searchSensorId = 27;
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -355,7 +457,7 @@ public class DashBoardActivity extends AppCompatActivity {
         queue.add(commonGetHttpRequest);
     }
 
-    private void getSensorValue(int sensorId, String searchDate, String sensorName){
+    private void getSensorValue(int sensorId, String searchDateStart, String searchDateEnd, String sensorName){
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -396,7 +498,7 @@ public class DashBoardActivity extends AppCompatActivity {
                 }
             }
         };
-        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors/"+sensorId+"/"+searchDate+"?sensorName="+sensorName;
+        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors/"+sensorId+"/"+searchDateStart+"/"+searchDateEnd+"?sensorName="+sensorName;
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
         queue.add(commonGetHttpRequest);
