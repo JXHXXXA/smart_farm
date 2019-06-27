@@ -245,7 +245,7 @@ public class DashBoardActivity extends AppCompatActivity {
         startDate = (Button) findViewById(R.id.start_date);
         endDate = (Button) findViewById(R.id.end_date);
         error_search = (Button) findViewById(R.id.error_search);
-        setError();
+//        setError();
 
         /* 에러 날짜 */
         startDate.setText(_today);
