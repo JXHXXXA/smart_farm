@@ -110,7 +110,7 @@ public class AreaActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         };
-        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/farms/"+farm_id+"/areas";
+        String url = "https://ueep5tof21.execute-api.ap-northeast-2.amazonaws.com/dev/farms/"+farm_id+"/areas";
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(AreaActivity.this);
         queue.add(commonGetHttpRequest);

@@ -10,16 +10,20 @@
         <item >이산화탄소2</item>
         <item >이산화탄소3</item>
         <item >이산화탄소4</item>
+        <item >이산화탄소5</item>
+        <item >이산화탄소6</item>
         <item >습도1</item>
         <item >습도2</item>
         <item >습도3</item>
         <item >습도4</item>
-        <item >배지습도1</item>
-        <item >배지습도2</item>
-        <item >배지습도3</item>
-        <item >조명</item>
+        <item >습도5</item>
+        <item >습도6</item>
         <item >전자저울1</item>
         <item >전자저울2</item>
         <item >전자저울3</item>
+        <item >전자저울4</item>
+        <item >전자저울5</item>
+        <item >전자저울6</item>
+        <item >조명</item>
     </string-array>
 </resources>

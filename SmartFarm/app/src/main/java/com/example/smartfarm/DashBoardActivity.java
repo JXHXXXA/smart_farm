@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -92,6 +93,10 @@ public class DashBoardActivity extends AppCompatActivity {
     ThresholdItemData thresholdItem;
     ArrayList<SettingItemData> settingData;
     SettingItemData settingItem;
+
+    OnOffListAdapter onOffAdapter;
+    ThreshouldListAdapter threshouldAdapter;
+    SettingListAdapter settingAdapter;
 
     String settingDatas;
 
@@ -451,7 +456,7 @@ public class DashBoardActivity extends AppCompatActivity {
                 }
             }
         };
-        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors";
+        String url = "https://ueep5tof21.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors";
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
         queue.add(commonGetHttpRequest);
@@ -498,7 +503,7 @@ public class DashBoardActivity extends AppCompatActivity {
                 }
             }
         };
-        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors/"+sensorId+"/"+searchDateStart+"/"+searchDateEnd+"?sensorName="+sensorName;
+        String url = "https://ueep5tof21.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/sensors/"+sensorId+"/"+searchDateStart+"/"+searchDateEnd+"?sensorName="+sensorName;
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
         queue.add(commonGetHttpRequest);
@@ -598,11 +603,17 @@ public class DashBoardActivity extends AppCompatActivity {
                 button2.setSelected(true);
                 button3.setSelected(false);
                 changeView(1);
+
                 verify.setOnClickListener(new Button.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                            setOnOffSettings();
-                        Toast.makeText(getApplicationContext(), "임계치가 설정되었습니다.", Toast.LENGTH_LONG).show();
+                        try {
+                            setThresholdSettings();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
@@ -619,8 +630,13 @@ public class DashBoardActivity extends AppCompatActivity {
                 verify.setOnClickListener(new Button.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                            setOnOffSettings();
-                        Toast.makeText(getApplicationContext(), "목표값이 설정되었습니다.", Toast.LENGTH_LONG).show();
+                        try {
+                            setValueSettings();
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
@@ -713,15 +729,15 @@ public class DashBoardActivity extends AppCompatActivity {
                     }
 
                     onoffView = (ListView)findViewById(R.id.onoff);
-                    ListAdapter onOFFAdapter = new OnOffListAdapter(onoffData);
-                    onoffView.setAdapter(onOFFAdapter);
+                    onOffAdapter = new OnOffListAdapter(onoffData);
+                    onoffView.setAdapter(onOffAdapter);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         };
-        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/settings";
+        String url = "https://ueep5tof21.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/settings";
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
         queue.add(commonGetHttpRequest);
@@ -731,13 +747,13 @@ public class DashBoardActivity extends AppCompatActivity {
         settingDatas = "";
         for(int i=0; i<onoffData.size(); i++){
             if(i==onoffData.size()-1)
-                settingDatas = settingDatas+onoffData.get(i).value;
+                settingDatas = settingDatas+onOffAdapter.getItemValue(i);
             else
-                settingDatas = settingDatas+onoffData.get(i).value+", ";
+                settingDatas = settingDatas+onOffAdapter.getItemValue(i)+", ";
         }
+
         byte[] bytes = settingDatas.getBytes("UTF-8");
         String sendBody = new String(bytes, Charset.forName("UTF-8"));
-//        System.out.println("settingDatas : "+sendBody);
 
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
@@ -800,7 +816,7 @@ public class DashBoardActivity extends AppCompatActivity {
                         }
                     }
                     thresholdView = (ListView)findViewById(R.id.threshold);
-                    ListAdapter threshouldAdapter = new ThreshouldListAdapter(thresholdData);
+                    threshouldAdapter = new ThreshouldListAdapter(thresholdData);
                     thresholdView.setAdapter(threshouldAdapter);
 
                 } catch (JSONException e) {
@@ -808,7 +824,7 @@ public class DashBoardActivity extends AppCompatActivity {
                 }
             }
         };
-        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/settings";
+        String url = "https://ueep5tof21.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/settings";
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
         queue.add(commonGetHttpRequest);
@@ -816,15 +832,20 @@ public class DashBoardActivity extends AppCompatActivity {
 
     private void setThresholdSettings() throws UnsupportedEncodingException, JSONException {
         settingDatas = "";
-        for(int i=0; i<onoffData.size(); i++){
-            if(i==onoffData.size()-1)
-                settingDatas = settingDatas+onoffData.get(i).value;
-            else
-                settingDatas = settingDatas+onoffData.get(i).value+", ";
+
+        for(int i=0; i<thresholdData.size(); i++){
+            if(i==thresholdData.size()-1){
+                settingDatas = settingDatas+threshouldAdapter.getItemMinValue(i)+", ";
+                settingDatas = settingDatas+threshouldAdapter.getItemMaxValue(i);
+            }
+            else{
+                settingDatas = settingDatas+threshouldAdapter.getItemMinValue(i)+", ";
+                settingDatas = settingDatas+threshouldAdapter.getItemMaxValue(i)+", ";
+            }
         }
+
         byte[] bytes = settingDatas.getBytes("UTF-8");
         String sendBody = new String(bytes, Charset.forName("UTF-8"));
-//        System.out.println("settingDatas : "+sendBody);
 
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
@@ -834,9 +855,9 @@ public class DashBoardActivity extends AppCompatActivity {
                     String status = response.getString("status");
 
                     if(status.equals("1"))
-                        Toast.makeText(getApplicationContext(), "On/Off 제어가 설정되었습니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "임계값이 설정되었습니다.", Toast.LENGTH_LONG).show();
                     else
-                        Toast.makeText(getApplicationContext(), "On/Off 제어에 실패하였습니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "임계값 설정에 실패하였습니다.", Toast.LENGTH_LONG).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -850,7 +871,8 @@ public class DashBoardActivity extends AppCompatActivity {
 
         System.out.println("jsonRequest : " + jsonRequest);
 
-        String url = "http://113.198.235.230:18080/app/setting";
+        String url = "http://113.198.235.230:18080/app/threshold";
+        System.out.println("url : " + url);
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.POST, url, jsonRequest, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
         queue.add(commonGetHttpRequest);
@@ -881,7 +903,7 @@ public class DashBoardActivity extends AppCompatActivity {
                         }
                     }
                     settingView = (ListView)findViewById(R.id.setting);
-                    ListAdapter settingAdapter = new SettingListAdapter(settingData);
+                    settingAdapter = new SettingListAdapter(settingData);
                     settingView.setAdapter(settingAdapter);
 
                 } catch (JSONException e) {
@@ -889,7 +911,7 @@ public class DashBoardActivity extends AppCompatActivity {
                 }
             }
         };
-        String url = "https://uxilt2y0g6.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/settings";
+        String url = "https://ueep5tof21.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/settings";
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
         queue.add(commonGetHttpRequest);
@@ -897,15 +919,15 @@ public class DashBoardActivity extends AppCompatActivity {
 
     private void setValueSettings() throws UnsupportedEncodingException, JSONException {
         settingDatas = "";
-        for(int i=0; i<onoffData.size(); i++){
-            if(i==onoffData.size()-1)
-                settingDatas = settingDatas+onoffData.get(i).value;
+        for(int i=0; i<settingData.size(); i++){
+            if(i==settingData.size()-1)
+                settingDatas = settingDatas+settingAdapter.getItemValue(i);
             else
-                settingDatas = settingDatas+onoffData.get(i).value+", ";
+                settingDatas = settingDatas+settingAdapter.getItemValue(i)+", ";
         }
+
         byte[] bytes = settingDatas.getBytes("UTF-8");
         String sendBody = new String(bytes, Charset.forName("UTF-8"));
-//        System.out.println("settingDatas : "+sendBody);
 
         Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
             @Override
@@ -915,9 +937,9 @@ public class DashBoardActivity extends AppCompatActivity {
                     String status = response.getString("status");
 
                     if(status.equals("1"))
-                        Toast.makeText(getApplicationContext(), "On/Off 제어가 설정되었습니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "목표값이 설정되었습니다.", Toast.LENGTH_LONG).show();
                     else
-                        Toast.makeText(getApplicationContext(), "On/Off 제어에 실패하였습니다.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "목표값 설정에 실패하였습니다.", Toast.LENGTH_LONG).show();
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -931,7 +953,7 @@ public class DashBoardActivity extends AppCompatActivity {
 
         System.out.println("jsonRequest : " + jsonRequest);
 
-        String url = "http://113.198.235.230:18080/app/setting";
+        String url = "http://113.198.235.230:18080/app/target";
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.POST, url, jsonRequest, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
         queue.add(commonGetHttpRequest);

@@ -32,11 +32,32 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
         // Do something with the date chosen by the user
-        DashBoardActivity activity = (DashBoardActivity) getActivity();              // MainActivity의 birthday 버튼에 접근하기 위해 액티비티 객체 선언
+        DashBoardActivity activity = (DashBoardActivity) getActivity();  // MainActivity의 birthday 버튼에 접근하기 위해 액티비티 객체 선언
+        String _month, _day;
+        if(month+1 < 10){
+            _month = "0" + (month+1);
+        } else{
+            _month = "" + (month+1);
+        }
+
+        if(day < 10){
+            _day = "0" + day;
+        } else{
+            _day = "" + day;
+        }
+
         if (selectedData==0){
             activity.startDate.setText(year+"/"+(month+1)+"/"+ day); // 유저가 선택한 날짜로 버튼 텍스트 변경
+            activity.startDate.setId(Integer.parseInt(year+""+ _month + _day));
         } else if (selectedData==1){
             activity.endDate.setText(year+"/"+(month+1)+"/"+ day); // 유저가 선택한 날짜로 버튼 텍스트 변경
+            activity.endDate.setId(Integer.parseInt(year+""+ _month + _day));
+        } else if (selectedData==2){
+            activity.statisticsStartDate.setText(year+"/"+(month+1)+"/"+ day); // 유저가 선택한 날짜로 버튼 텍스트 변경
+            activity.statisticsStartDate.setId(Integer.parseInt(year+""+ _month + _day));
+        } else if (selectedData==3){
+            activity.statisticsEndDate.setText(year+"/"+(month+1)+"/"+ day); // 유저가 선택한 날짜로 버튼 텍스트 변경
+            activity.statisticsEndDate.setId(Integer.parseInt(year+""+ _month + _day));
         }
     }
 
