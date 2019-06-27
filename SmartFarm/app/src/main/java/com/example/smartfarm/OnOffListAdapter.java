@@ -93,35 +93,6 @@ public class OnOffListAdapter extends BaseAdapter {
         });
 
         return convertView;
-
-        /*
-        sensor = (TextView) convertView.findViewById(R.id.onoff_sensor_name);
-        toggleBnt = (ToggleButton) convertView.findViewById(R.id.onfoff_toggle);
-        toggleBnt.setOnClickListener(new ToggleButton.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(toggleBnt.isChecked()) {
-                    m_itemDataList.get(position).setValue("0");
-                    toggleBnt.setChecked(false);
-                    System.out.println(m_itemDataList.get(position).name+" 이(가) Off 되었습니다.");
-                }
-                else {
-                    m_itemDataList.get(position).setValue("1");
-                    toggleBnt.setChecked(true);
-                    System.out.println(m_itemDataList.get(position).name+" 이(가) On 되었습니다.");
-                }
-            }
-        });
-
-        sensor.setText(m_itemDataList.get(position).name);
-
-        if(m_itemDataList.get(position).value.equals("0"))
-            toggleBnt.setChecked(false);
-        else
-            toggleBnt.setChecked(true);
-
-        return convertView;
-        */
     }
 
     public Object getItemValue(int position) {

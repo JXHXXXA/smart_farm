@@ -183,7 +183,7 @@
                                         <FrameLayout
                                             android:id="@+id/frame"
                                             android:layout_width="match_parent"
-                                            android:layout_height="1500dp"
+                                            android:layout_height="500dp"
                                             android:layout_gravity="center_horizontal">
                                             <!-- ON/OFF -->
                                             <ListView
@@ -282,15 +282,14 @@
                 <LinearLayout
                     android:id="@+id/content4"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginHorizontal="10dp"
                         android:layout_marginVertical="10dp"
-                        android:layout_weight="5"
                         android:orientation="horizontal"
                         android:textAlignment="center">
 
@@ -333,38 +332,37 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:gravity="center"
                             android:orientation="horizontal"
                             android:layout_marginBottom="10dp">
 
                             <TextView
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="센서명"
                                 android:textAlignment="center" />
 
                             <TextView
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="유형"
                                 android:textAlignment="center" />
 
                             <TextView
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="발생일시"
                                 android:textAlignment="center" />
 
                             <TextView
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:text="회복일시"
                                 android:textAlignment="center" />
@@ -372,17 +370,17 @@
 
                         <ScrollView
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="500dp"
+                                android:layout_height="wrap_content"
                                 android:orientation="vertical">
 
                                 <ListView
                                     android:id="@+id/error_table"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content">
+                                    android:layout_height="500dp">
                                 </ListView>
                             </LinearLayout>
                         </ScrollView>

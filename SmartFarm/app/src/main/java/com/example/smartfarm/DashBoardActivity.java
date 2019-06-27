@@ -45,6 +45,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -89,19 +90,24 @@ public class DashBoardActivity extends AppCompatActivity {
 
     ArrayList<OnOffItemData> onoffData;
     OnOffItemData onOffItem;
+    OnOffListAdapter onOffAdapter;
+
     ArrayList<ThresholdItemData> thresholdData;
     ThresholdItemData thresholdItem;
+    ThreshouldListAdapter threshouldAdapter;
+
     ArrayList<SettingItemData> settingData;
     SettingItemData settingItem;
-
-    OnOffListAdapter onOffAdapter;
-    ThreshouldListAdapter threshouldAdapter;
     SettingListAdapter settingAdapter;
+
+    ArrayList<ErrorItemData> errorData;
+    ErrorItemData errorItem;
+    ErrorItemListAdapter errorAdapter;
 
     String settingDatas;
 
     SimpleDateFormat timeStampFormat;
-    SimpleDateFormat dateFormat, dateFormat2;
+    SimpleDateFormat dateFormat, dateFormat2, timeFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,8 +119,9 @@ public class DashBoardActivity extends AppCompatActivity {
         System.out.println("area_id : " + area_id);
 
         timeStampFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        dateFormat = new SimpleDateFormat(" yyyy/MM/dd");
+        dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         dateFormat2 = new SimpleDateFormat("yyyyMMdd");
+        timeFormat = new SimpleDateFormat("HH:mm:ss");
 
         area_name = (TextView) findViewById(R.id.area_name);
         area_name.setText("코끼리 하마 농장 "+ area_id +"동");
@@ -189,8 +196,6 @@ public class DashBoardActivity extends AppCompatActivity {
         });
 
         sensor_entry = new ArrayList<>();
-
-        /* here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
         getSensorValueList();
 
         time = (TextView) findViewById(R.id.dash_board_time);
@@ -198,19 +203,16 @@ public class DashBoardActivity extends AppCompatActivity {
         setButtonSeleted();
 
         getOnOffSettings();
-
 //        getThresholdSettings();
-
 //        getValueSettings();
 
         setSpinner();
-        setError();
 
         /* 장치설정의 3가지 view */
         onoffView = (ListView) findViewById(R.id.onoff);
         thresholdView = (ListView) findViewById(R.id.threshold);
         settingView = (ListView) findViewById(R.id.setting);
-/*        errorView = (ListView) findViewByld(R.id.error);*/
+        errorView = (ListView) findViewById(R.id.error_table);
         frame = (FrameLayout) findViewById(R.id.frame);
         frame.removeView(thresholdView);
         frame.removeView(settingView);
@@ -243,7 +245,7 @@ public class DashBoardActivity extends AppCompatActivity {
         startDate = (Button) findViewById(R.id.start_date);
         endDate = (Button) findViewById(R.id.end_date);
         error_search = (Button) findViewById(R.id.error_search);
-        errorView = (ListView) findViewById(R.id.error_table);
+        setError();
 
         /* 에러 날짜 */
         startDate.setText(_today);
@@ -255,7 +257,8 @@ public class DashBoardActivity extends AppCompatActivity {
         error_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), startDate.getText().toString() + "\n" + endDate.getText().toString(), Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), startDate.getText().toString() + "\n" + endDate.getText().toString(), Toast.LENGTH_LONG).show();
+                getErrors(Integer.toString(startDate.getId()), Integer.toString(endDate.getId()));
             }
         });
     }
@@ -280,25 +283,27 @@ public class DashBoardActivity extends AppCompatActivity {
         newFragment.show(getSupportFragmentManager(), "datePicker");                //프래그먼트 매니저를 이용하여 프래그먼트 보여주기
     }
 
+
     private void setError(){
-        int nDatCnt=0;
-        ArrayList<ErrorItemData> errorData = new ArrayList<>();
-        for (int i=0; i<10; i++)
+        errorData = new ArrayList<>();
+        for (int i=0; i<30; i++)
         {
             ErrorItemData errorItem = new ErrorItemData();
-            errorItem.sensor_name = "실내온도2";
-            errorItem.type = "임계치 초과";
-            errorItem.occur_date = "2019/06/15";
-            errorItem.recover_date = "2019/06/18";
+            errorItem.sensor_type = "실내온도2";
+            errorItem.error_info = "임계치 초과";
+            errorItem.time_stamp = "2019/06/15";
+            errorItem.repair_time = null;
             errorData.add(errorItem);
         }
 
         errorView = (ListView)findViewById(R.id.error_table);
-        ListAdapter errorAdapter = new ErrorItemListAdapter(errorData);
+        errorAdapter = new ErrorItemListAdapter(errorData);
         errorView.setAdapter(errorAdapter);
-        /* 잘리는거맞추깅 */
+        System.out.println("임의 에러 10개 추가");
+//        잘리는거맞추깅
 //        setListViewHeightBasedOnChildren(errorView);
     }
+
 
     public void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
@@ -955,6 +960,51 @@ public class DashBoardActivity extends AppCompatActivity {
 
         String url = "http://113.198.235.230:18080/app/target";
         CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.POST, url, jsonRequest, responseListener, null);
+        RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
+        queue.add(commonGetHttpRequest);
+    }
+
+    private void getErrors(String searchDateStart, String searchDateEnd){
+        Response.Listener<JSONObject> responseListener = new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    System.out.println("response : " + response);
+                    JSONObject jsonResponse = response;
+                    JSONArray errorList = jsonResponse.getJSONArray("data");
+
+                    errorData = new ArrayList<>();
+                    errorItem = new ErrorItemData();
+
+                    for(int i=0; i<errorList.length(); i++) {
+                        errorItem = new ErrorItemData();
+                        errorItem.sensor_type = errorList.getJSONObject(i).getString("sensor_type");
+                        errorItem.error_info = errorList.getJSONObject(i).getString("error_info");
+
+                        if(!errorList.getJSONObject(i).getString("time_stamp").equals("null")) {
+                            Date time_stamp = timeStampFormat.parse(errorList.getJSONObject(i).getString("time_stamp"));
+                            errorItem.time_stamp = dateFormat.format(time_stamp) + "\n" + timeFormat.format(time_stamp);
+                        }
+                        if(!errorList.getJSONObject(i).getString("repair_time").equals("null")) {
+                            Date repair_time = timeStampFormat.parse(errorList.getJSONObject(i).getString("repair_time"));
+                            errorItem.repair_time = dateFormat.format(repair_time) + "\n" + timeFormat.format(repair_time);
+                        }
+
+                        errorData.add(errorItem);
+                    }
+                    errorView = (ListView)findViewById(R.id.error_table);
+                    errorAdapter = new ErrorItemListAdapter(errorData);
+                    errorView.setAdapter(errorAdapter);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        String url = "https://ueep5tof21.execute-api.ap-northeast-2.amazonaws.com/dev/areas/"+area_id+"/errors"+"/"+searchDateStart+"/"+searchDateEnd;
+        CommonGetHttpRequest commonGetHttpRequest = new CommonGetHttpRequest(Request.Method.GET, url, null, responseListener, null);
         RequestQueue queue = Volley.newRequestQueue(DashBoardActivity.this);
         queue.add(commonGetHttpRequest);
     }

@@ -12,8 +12,8 @@ import java.util.ArrayList;
 
 public class ErrorItemListAdapter extends BaseAdapter {
     LayoutInflater inflater = null;
-    private ArrayList<ErrorItemData> m_oData = null;
-    private int nListCnt = 0;
+    private ArrayList<ErrorItemData> m_oData;
+    private int nListCnt;
 
     public ErrorItemListAdapter(ArrayList<ErrorItemData> _oData) {
         m_oData = _oData;
@@ -22,18 +22,17 @@ public class ErrorItemListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        Log.i("TAG", "getCount");
         return nListCnt;
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return m_oData.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
@@ -46,16 +45,20 @@ public class ErrorItemListAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.error, parent, false);
         }
 
-        TextView sensor_name = (TextView) convertView.findViewById(R.id.error_sensor_name);
-        TextView type = (TextView) convertView.findViewById(R.id.error_type);
+        TextView sensor_type = (TextView) convertView.findViewById(R.id.error_sensor_name);
+        TextView error_info = (TextView) convertView.findViewById(R.id.error_type);
         TextView occur_date = (TextView) convertView.findViewById(R.id.error_occur_date);
         TextView recover_date = (TextView) convertView.findViewById(R.id.error_recover_date);
 
-        sensor_name.setText(m_oData.get(position).sensor_name);
-        type.setText(m_oData.get(position).type);
-        occur_date.setText(m_oData.get(position).occur_date);
-        recover_date.setText(m_oData.get(position).recover_date);
-
+        sensor_type.setText(m_oData.get(position).sensor_type);
+        error_info.setText(m_oData.get(position).error_info);
+        occur_date.setText(m_oData.get(position).time_stamp);
+        if(m_oData.get(position).repair_time!=null) {
+            if (m_oData.get(position).repair_time.equals("null"))
+                recover_date.setText(null);
+            else
+                recover_date.setText(m_oData.get(position).repair_time);
+        }
         return convertView;
     }
 }

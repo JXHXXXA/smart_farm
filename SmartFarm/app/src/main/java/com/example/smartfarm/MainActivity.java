@@ -31,10 +31,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Farm farm;
     ImageView backImg;
 
+    private BackPressCloseHandler backPressCloseHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        backPressCloseHandler = new BackPressCloseHandler(this);
 
         Intent intent = getIntent();
         user_id = intent.getStringExtra("user_id");
@@ -110,5 +114,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+         backPressCloseHandler.onBackPressed();
     }
 }
